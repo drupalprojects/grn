@@ -40,11 +40,13 @@ if (!is_dir(".git")) {
   usage("This script must be run from the root directory of your Git project.");
 }
 
+$rval = '';
 exec('git show -s --format=%h ' . $prev_tag . '^{commit}', $prev, $rval);
 if ($rval) {
   echo "ERROR: $prev_tag is not a tag.";
   exit(1);
 }
+$rval = '';
 exec('git show -s --format=%h ' . $cur_tag . '^{commit}', $cur, $rval);
 if ($rval) {
   echo "ERROR: $cur_tag is not a tag.";
