@@ -26,7 +26,7 @@
  */
 
 if (count($argv) < 3) {
-  usage("You must specify the release tags to compare");
+  usage("You must specify the release tags to compare.");
 }
 $prev_tag = $argv[1];
 $cur_tag = $argv[2];
