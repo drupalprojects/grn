@@ -77,9 +77,9 @@ function get_changes($prev, $cur) {
   $changes = array();
   $rval = '';
   $logs = array();
-  exec("cvs -qf log -NS -r$prev::$cur 2>&1", $logs, $rval);
+  exec("git log -s --format=format:%B $prev..$cur", $logs, $rval);
   if ($rval) {
-    print "ERROR: 'cvs log' returned failure: $rval";
+    print "ERROR: 'git log' returned failure: $rval";
     print implode("\n", $logs);
     exit(1);
   }
