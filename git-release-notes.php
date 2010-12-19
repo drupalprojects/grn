@@ -66,7 +66,7 @@ function usage($msg = NULL) {
   print <<<EOF
 Usage: $argv[0] [previous_release_tag] [current_release_tag]
 For example:
-$argv[0] 6.0 6.1
+$argv[0] 6.x-1.0 6.x-1.1
 
 EOF;
   exit(empty($msg) ? 0 : 1);
