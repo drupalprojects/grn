@@ -54,7 +54,7 @@ if ($rval) {
 }
 
 $changes = get_changes($prev, $cur);
-print "<p>Changes since $prev:</p>\n";
+print "<p>Changes since $prev_tag:</p>\n";
 print_changes($changes);
 
 
