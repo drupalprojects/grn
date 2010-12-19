@@ -101,7 +101,7 @@ function get_changes($prev, $cur) {
 function print_changes($changes) {
   print "<ul>\n";
   foreach ($changes as $num => $msg) {
-    print '<li>' . preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->msg) . "</li>\n";
+    print '<li>' . preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line) . "</li>\n";
   }
   print "</ul>\n";
 }
