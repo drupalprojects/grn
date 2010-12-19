@@ -42,6 +42,17 @@ if (!is_dir(".git")) {
   usage("This script must be run from the root directory of your Git project.");
 }
 
+exec('git show -s --format=%h ' . $prev_tag . '^{commit}', $prev, $rval);
+if ($rval) {
+  echo "ERROR: $prev_tag is not a tag.";
+  exit(1);
+}
+exec('git show -s --format=%h ' . $cur_tag . '^{commit}', $cur, $rval);
+if ($rval) {
+  echo "ERROR: $cur_tag is not a tag.";
+  exit(1);
+}
+
 $changes = get_changes($prev, $cur);
 print "<p>Changes since $prev:</p>\n";
 print_changes($changes);
