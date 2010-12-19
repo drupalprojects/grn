@@ -14,7 +14,6 @@
  * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
  * TODO:
- * - Configurable path to git binary
  * - Lookup issues on d.o to group changes by issue type (bug, feature)
  * - Should strip out leading dashes: "- something"
  * - Should remove the word "Patch " before patch #s so they are
@@ -30,6 +29,12 @@ if (count($argv) < 3) {
 }
 $prev_tag = $argv[1];
 $cur_tag = $argv[2];
+if (!isset($argv[3])) {
+  $git = 'git';
+}
+else {
+  $git = $argv[3];
+}
 
 // This line allows you keep one copy of this script at a given location.
 // Setup a shell alias to this file and then just call the alias from the dir
@@ -41,13 +46,13 @@ if (!is_dir(".git")) {
 }
 
 $rval = '';
-exec('git show -s --format=%h ' . $prev_tag . '^{commit}', $prev, $rval);
+exec("$git show -s --format=%h " . $prev_tag . '^{commit}', $prev, $rval);
 if ($rval) {
   echo "ERROR: $prev_tag is not a tag.";
   exit(1);
 }
 $rval = '';
-exec('git show -s --format=%h ' . $cur_tag . '^{commit}', $cur, $rval);
+exec("$git show -s --format=%h " . $cur_tag . '^{commit}', $cur, $rval);
 if ($rval) {
   echo "ERROR: $cur_tag is not a tag.";
   exit(1);
@@ -76,7 +81,7 @@ function get_changes($prev, $cur) {
   $changes = array();
   $rval = '';
   $logs = array();
-  exec("git log -s --format=format:%B $prev..$cur", $logs, $rval);
+  exec("$git log -s --format=format:%B $prev..$cur", $logs, $rval);
   if ($rval) {
     print "ERROR: 'git log' returned failure: $rval";
     print implode("\n", $logs);
