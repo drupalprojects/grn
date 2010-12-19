@@ -14,7 +14,7 @@
  * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
  * TODO:
- * - Configureable path to git binary
+ * - Configurable path to git binary
  * - Lookup issues on d.o to group changes by issue type (bug, feature)
  * - Should strip out leading dashes: "- something"
  * - Should remove the word "Patch " before patch #s so they are
