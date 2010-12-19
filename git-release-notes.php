@@ -21,6 +21,7 @@
  *   formatted consistently.
  *
  * @author Derek Wright (http://drupal.org/user/46549)
+ * @author Josh The Geek (http://drupal.org/user/926382)
  *
  */
 
