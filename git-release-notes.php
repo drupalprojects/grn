@@ -30,8 +30,8 @@
 if (count($argv) < 3) {
   usage("You must specify the release tags to compare");
 }
-$prev = $argv[1];
-$cur = $argv[2];
+$prev_tag = $argv[1];
+$cur_tag = $argv[2];
 
 // This line allows you keep one copy of this script at a given location.
 // Setup a shell alias to this file and then just call the alias from the dir
