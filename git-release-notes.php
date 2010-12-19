@@ -69,9 +69,9 @@ function usage($msg = NULL) {
     print "ERROR: $msg\n";
   }
   print <<<EOF
-Usage: $argv[0] [previous_release_tag] [current_release_tag]
+Usage: $argv[0] previous_release_tag current_release_tag [path/to/git/binary]
 For example:
-$argv[0] 6.x-1.0 6.x-1.1
+$argv[0] 6.x-1.0 6.x-1.1 /usr/local/git/bin/git
 
 EOF;
   exit(empty($msg) ? 0 : 1);
