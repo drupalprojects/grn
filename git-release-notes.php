@@ -72,7 +72,6 @@ EOF;
   exit(empty($msg) ? 0 : 1);
 }
 
-// Based loosely on cvs.module cvs_process_log()
 function get_changes($prev, $cur) {
   $changes = array();
   $rval = '';
