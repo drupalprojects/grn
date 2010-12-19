@@ -38,8 +38,8 @@ $cur = $argv[2];
 // whose notes need generating.
 chdir(getcwd());
 
-if (!is_dir("CVS")) {
-  usage("You must run this script in a local CVS workspace for your project");
+if (!is_dir(".git")) {
+  usage("This script must be run from the root directory of your Git project.");
 }
 
 $changes = get_changes($prev, $cur);
