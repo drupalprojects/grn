@@ -15,9 +15,6 @@
  *
  * TODO:
  * - Lookup issues on d.o to group changes by issue type (bug, feature)
- * - Should strip out leading dashes: "- something"
- * - Should remove the word "Patch " before patch #s so they are
- *   formatted consistently.
  *
  * @author Derek Wright (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
@@ -101,7 +98,7 @@ function get_changes($prev, $cur) {
 function print_changes($changes) {
   print "<ul>\n";
   foreach ($changes as $num => $msg) {
-    print '<li>' . preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->msg) . "</li>\n";
+    print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->msg))) . "</li>\n";
   }
   print "</ul>\n";
 }
