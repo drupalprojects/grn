@@ -1,23 +1,20 @@
 #!/usr/bin/php
 <?php
 
-// $Id: cvs-release-notes.php,v 1.7 2008/02/13 22:15:33 weitzman Exp $
-
 /**
  * @file
- * Parses all CVS log messages between 2 release tags and automatically
+ * Parses all Git log messages between 2 release tags and automatically
  * generates initial HTML for the release notes. This script must be
- * run inside the root directory of a local CVS workspace of the project
- * you want to generate release notes for.  Assumes "cvs" is in your
- * PATH, and that the workspace has already been checked out with the
- * appropriate CVSROOT.
+ * run inside the root directory of a local Git repo of the project
+ * you want to generate release notes for.  Assumes "git" is in your
+ * PATH. The author of the CVS version was Derek Wright. Josh The Geek
+ * ported the script to Git.
  *
  * Usage:
- * cvs-release-notes.php [previous-release-tag] [current-release-tag]
+ * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
  * TODO:
- * - Option to include patch committer if "by" isn't included in message
- * - Pretty formatting of previous release version (instead of the tag)
+ * - Configureable path to git binary
  * - Lookup issues on d.o to group changes by issue type (bug, feature)
  * - Should strip out leading dashes: "- something"
  * - Should remove the word "Patch " before patch #s so they are
