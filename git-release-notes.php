@@ -95,24 +95,9 @@ function get_changes($prev, $cur) {
 }
 
 function print_changes($changes) {
-  // Sort changes chronologically
-  usort($changes, 'log_date_cmp');
   print "<ul>\n";
-  foreach ($changes as $k => $obj) {
-    print '<li>' . preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->comment) . "</li>\n";
+  foreach ($changes as $num => $msg) {
+    print '<li>' . preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->msg) . "</li>\n";
   }
   print "</ul>\n";
 }
-
-function cvs_explode($text, $delim = ':') {
-  $parts = explode($delim, $text, 2);
-  return trim($parts[1]);
-}
-
-function log_date_cmp($a, $b) {
-  if ($a->date == $b->date) {
-    return 0;
-  }
-  return ($a->date < $b->date) ? -1 : 1;
-}
-
