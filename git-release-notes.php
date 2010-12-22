@@ -14,7 +14,7 @@
  * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
  * TODO:
- * - Lookup issues on d.o to group changes by issue type (bug, feature)
+ * - None!
  *
  * @author Derek Wright (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
@@ -74,6 +74,28 @@ EOF;
   exit(empty($msg) ? 0 : 1);
 }
 
+function get_page_data($issue) {
+  $url = "http://drupal.org/node/" . $issue;
+  // cURL
+  $curl = curl_init($url); // Initiate transfer
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // Don't write to stdout
+  $raw = curl_exec($curl); // Get it and set the raw data
+  curl_close($curl); // Close it to free memory
+  // Get type
+  $tfront = strstr($raw,' <tr class="odd"><td>Category:</td><td>'); // Find what's after the start tag
+  $type = strstr($cfront,'</td> </tr>',true); // And filter it to get the count
+  return $type;
+}
+
+function get_issue_type($line) {
+  preg_match('/#(\d+)/', $line, $matches);
+  $issue = trim($matches[1], ' .a..zA..Z#');
+  if (!is_numeric($issue)) {
+    echo "ERROR: '$issue' is not a valid issue number.";
+  }
+  return get_page_data($issue);
+}
+
 function get_changes($prev, $cur) {
   $changes = array();
   $rval = '';
@@ -89,7 +111,7 @@ function get_changes($prev, $cur) {
         // Skip blank lines that are left behind in the messages.
         continue;
       }
-      $changes[] = $line;
+      $changes[get_issue_type($line)][] = $line;
     }
   }
   return $changes;
@@ -98,7 +120,7 @@ function get_changes($prev, $cur) {
 function print_changes($changes) {
   print "<ul>\n";
   foreach ($changes as $num => $msg) {
-    print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $obj->msg))) . "</li>\n";
+    print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
   }
   print "</ul>\n";
 }
