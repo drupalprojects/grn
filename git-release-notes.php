@@ -89,11 +89,24 @@ function get_page_data($issue) {
 
 function get_issue_type($line) {
   preg_match('/#(\d+)/', $line, $matches);
+  if (!isset($matches[1])) {
+    $return = 'Other changes:';
+  }
   $issue = trim($matches[1], ' .a..zA..Z#');
   if (!is_numeric($issue)) {
     echo "ERROR: '$issue' is not a valid issue number.";
   }
-  return get_page_data($issue);
+  $type = get_page_data($issue);
+  if ($type == 'feature request') {
+    $return = 'New features:';
+  }
+  else if ($type == 'bug report') {
+    $return = 'Bug fixes:';
+  }
+  else {
+    $return = 'Other changes:';
+  }
+  return $return;
 }
 
 function get_changes($prev, $cur) {
@@ -119,8 +132,12 @@ function get_changes($prev, $cur) {
 
 function print_changes($changes) {
   print "<ul>\n";
-  foreach ($changes as $num => $line) {
-    print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
+  foreach ($changes as $type => $issues) {
+    echo "<li>$type<ul>\n"
+    foreach ($issues as $number => $line) {
+      print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
+    }
+    echo "</ul></li>\n";
   }
   print "</ul>\n";
 }
