@@ -26,7 +26,8 @@ if (count($argv) < 3) {
 }
 $prev_tag = $argv[1];
 $cur_tag = $argv[2];
-if (!isset($argv[3])) {
+global $git;
+if (!isset($argv[3]) || empty($argv[3])) {
   $git = 'git';
 }
 else {
@@ -55,7 +56,7 @@ if ($rval) {
   exit(1);
 }
 
-$changes = get_changes($prev, $cur);
+$changes = get_changes($prev[0], $cur[0], $git);
 print "<p>Changes since $prev_tag:</p>\n";
 print_changes($changes);
 
@@ -113,7 +114,7 @@ function get_issue_type($line) {
   return $return;
 }
 
-function get_changes($prev, $cur) {
+function get_changes($prev, $cur, $git) {
   $changes = array();
   $rval = '';
   $logs = array();
@@ -130,14 +131,13 @@ function get_changes($prev, $cur) {
       }
       $changes[get_issue_type($line)][] = $line;
     }
-  }
   return $changes;
 }
 
 function print_changes($changes) {
   print "<ul>\n";
   foreach ($changes as $type => $issues) {
-    echo "<li>$type<ul>\n"
+    echo "<li>$type<ul>\n";
     foreach ($issues as $number => $line) {
       print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
     }
