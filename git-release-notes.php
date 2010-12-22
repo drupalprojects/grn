@@ -119,7 +119,7 @@ function get_changes($prev, $cur) {
 
 function print_changes($changes) {
   print "<ul>\n";
-  foreach ($changes as $num => $msg) {
+  foreach ($changes as $num => $line) {
     print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
   }
   print "</ul>\n";
