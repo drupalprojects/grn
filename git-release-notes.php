@@ -14,7 +14,7 @@
  * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
  * TODO:
- * - None!
+ * - Make this a Drush extension
  *
  * @author Derek Wright (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
@@ -139,7 +139,10 @@ function print_changes($changes) {
   foreach ($changes as $type => $issues) {
     echo "<li>$type<ul>\n";
     foreach ($issues as $number => $line) {
-      print '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
+      $print = '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
+      if ($print != "<li></li>\n") {
+        echo $print;
+      }
     }
     echo "</ul></li>\n";
   }
