@@ -82,25 +82,29 @@ function get_page_data($issue) {
   $raw = curl_exec($curl); // Get it and set the raw data
   curl_close($curl); // Close it to free memory
   // Get type
-  $tfront = strstr($raw,' <tr class="odd"><td>Category:</td><td>'); // Find what's after the start tag
-  $type = strstr($cfront,'</td> </tr>',true); // And filter it to get the count
+  $init = strstr($raw, '  <div class="node-content">
+    <div class="project-issue"><div id="project-summary-container" class="clear-block"><div id="project-issue-summary-table" class="summary"><table>
+');
+  $tfront = strstr($init,'<tr class="even"><td>Category:</td><td>'); // Find what's after the start tag
+  $type = strstr($tfront,'</td> </tr>
+ <tr class="odd"><td>Priority:</td><td>',true); // And filter it to get the count
   return $type;
 }
 
 function get_issue_type($line) {
   preg_match('/#(\d+)/', $line, $matches);
-  if (!isset($matches[1])) {
-    $return = 'Other changes:';
+  if (!isset($matches[1]) || empty($matches[1])) {
+    return $return = 'Other changes:';
   }
-  $issue = trim($matches[1], ' .a..zA..Z#');
+  $issue = trim($matches[1], ' .a..zA..Z#:/');
   if (!is_numeric($issue)) {
     echo "ERROR: '$issue' is not a valid issue number.";
   }
   $type = get_page_data($issue);
-  if ($type == 'feature request') {
+  if ($type == '<tr class="even"><td>Category:</td><td>feature request') {
     $return = 'New features:';
   }
-  else if ($type == 'bug report') {
+  else if ($type == '<tr class="even"><td>Category:</td><td>bug report') {
     $return = 'Bug fixes:';
   }
   else {
