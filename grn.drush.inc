@@ -1,5 +1,4 @@
 <?php
-// $Id: pm.drush.inc,v 1.116 2010/06/16 15:08:02 weitzman Exp $
 
 /**
  * @file
@@ -10,27 +9,27 @@
 /**
  * Implementation of hook_drush_help().
  */
-function pm_drush_help($section) {
+function grn_drush_help($section) {
   switch ($section) {
-    case 'drush:pm-enable':
+    case 'drush:grn-enable':
       return dt('Enable one or more modules or themes. Enable dependant modules as well.');
-    case 'drush:pm-disable':
+    case 'drush:grn-disable':
       return dt('Disable one or more modules or themes. Disable dependant modules as well.');
-    case 'drush:pm-info':
+    case 'drush:grn-info':
       return dt('Show detailed info for one or more projects.');
-    case 'drush:pm-uninstall':
+    case 'drush:grn-uninstall':
       return dt('Uninstall one or more modules. Modules must be disabled first.');
-    case 'drush:pm-list':
+    case 'drush:grn-list':
       return dt('Show a list of available modules and themes.');
-    case 'drush:pm-refresh':
+    case 'drush:grn-refresh':
       return dt('Refresh update status information. Run this before running update or updatecode commands.');
-    case 'drush:pm-updatecode':
+    case 'drush:grn-updatecode':
       return dt("Display available update information and allow updating of all installed project code to the specified version (or latest by default). Note: The user is asked to confirm before the actual update. Use the --yes option to answer yes automatically.");
-    case 'drush:pm-update':
+    case 'drush:grn-update':
       return dt("Display available update information and allow updating of all installed projects to the specified version (or latest by default), followed by applying any database updates required (as with running update.php). Note: The user is asked to confirm before the actual update. Use the --yes option to answer yes automatically.");
-      case 'drush:pm-releases':
+      case 'drush:grn-releases':
       return dt("View all releases for a given project (modules, themes, profiles, translations). Useful for deciding which version to install/update.");
-    case 'drush:pm-download':
+    case 'drush:grn-download':
       return dt("Quickly download projects (modules, themes, profiles, translations) from drupal.org. Automatically figures out which module version you want based on its latest release, or you may specify a particular version. Downloads drupal core as well.  If no destination is provided, defaults to a site specific modules directory if available, then to sites/all/modules if available, then to the current working directory.");
   }
 }
@@ -38,7 +37,7 @@ function pm_drush_help($section) {
 /**
  * Implementation of hook_drush_command().
  */
-function pm_drush_command() {
+function grn_drush_command() {
   $update = 'update';
   if (drush_drupal_major_version() == 5) {
     $update = 'update_status';
@@ -50,7 +49,7 @@ function pm_drush_command() {
     ),
   );
 
-  $items['pm-enable'] = array(
+  $items['grn-enable'] = array(
     'description' => 'Enable one or more modules or themes.',
     'arguments' => array(
       'modules' => 'A space delimited list of modules or themes. You can use the * wildcard at the end of module and theme names to to enable all matches.',
@@ -58,7 +57,7 @@ function pm_drush_command() {
     'aliases' => array('en'),
     'deprecated-aliases' => array('enable'),
   );
-  $items['pm-disable'] = array(
+  $items['grn-disable'] = array(
     'description' => 'Disable one or more modules or themes.',
     'arguments' => array(
       'modules' => 'A space delimited list of modules or themes. You can use the * wildcard at the end of module and theme names to disable multiple matches.',
@@ -66,7 +65,7 @@ function pm_drush_command() {
     'aliases' => array('dis'),
     'deprecated-aliases' => array('disable'),
   );
-  $items['pm-info'] = array(
+  $items['grn-info'] = array(
     'description' => 'Show info for one or more projects.',
     'arguments' => array(
       'projects' => 'A space delimited list of projects. You can use the * wildcard at the end of module names to get info for the project and all its sub projects.',
@@ -77,14 +76,14 @@ function pm_drush_command() {
   // $items['install'] = array(
   //     'description' => 'Download and enable one or more modules',
   //   );
-  $items['pm-uninstall'] = array(
+  $items['grn-uninstall'] = array(
     'description' => 'Uninstall one or more modules.',
     'arguments' => array(
       'modules' => 'A space delimited list of modules.',
     ),
     'deprecated-aliases' => array('uninstall'),
   );
-  $items['pm-list'] = array(
+  $items['grn-list'] = array(
     'description' => 'Show a list of available modules and themes',
     'callback arguments' => array(array(), FALSE),
     'options' => array(
@@ -96,13 +95,13 @@ function pm_drush_command() {
     'aliases' => array('sm'),
     'deprecated-aliases' => array('statusmodules'),
   );
-  $items['pm-refresh'] = array(
+  $items['grn-refresh'] = array(
     'description' => 'Refresh update status information',
     'drupal dependencies' => array($update),
     'aliases' => array('rf'),
     'deprecated-aliases' => array('refresh'),
   );
-  $items['pm-updatecode'] = array(
+  $items['grn-updatecode'] = array(
     'description' => 'Update your project code',
     'drupal dependencies' => array($update),
     'arguments' => array(
@@ -115,7 +114,7 @@ function pm_drush_command() {
     'aliases' => array('upc'),
     'deprecated-aliases' => array('updatecode'),
   ) + $engines;
-  $items['pm-update'] = array(
+  $items['grn-update'] = array(
     'description' => 'Update your project code and apply any database updates required (update.php)',
     'drupal dependencies' => array($update),
     'arguments' => array(
@@ -128,26 +127,26 @@ function pm_drush_command() {
     'aliases' => array('up'),
     'deprecated-aliases' => array('update'),
   );
-  $items['pm-releases'] = array(
+  $items['grn-releases'] = array(
     'description' => 'Release information for a project',
     'drupal dependencies' => array($update),
     'arguments' => array(
       'projects' => 'A space separated list of drupal.org project names.',
     ),
     'examples' => array(
-      'drush pm-releases cck zen' => 'View releases for cck and Zen projects.',
+      'drush grn-releases cck zen' => 'View releases for cck and Zen projects.',
     ),
     'deprecated-aliases' => array('info'),
   );
-  $items['pm-download'] = array(
+  $items['grn-download'] = array(
     'description' => 'Download core Drupal and projects like CCK, Zen, etc.',
     'examples' => array(
       'drush dl' => 'Download latest version of Drupal core.',
       'drush dl drupal' => 'Download latest stable version of Drupal core',
-      'drush dl drupal-7.x' => 'Download latest 7.x development version of Drupal core',
+      'drush dl drupal-7.x' => 'Download latest 7.x develogrnent version of Drupal core',
       'drush dl cck zen es' => 'Download latest versions of CCK, Zen and Spanish translations for my version of Drupal.',
       'drush dl og-1.3' => 'Download a specfic version of Organic groups module for my version of Drupal.',
-      'drush dl diff-6.x-2.x' => 'Download a specific development branch of diff module for a specific Drupal version.',
+      'drush dl diff-6.x-2.x' => 'Download a specific develogrnent branch of diff module for a specific Drupal version.',
     ),
     'arguments' => array(
       'projects' => 'A space separated list of project names, with optional version. Defaults to \'drupal\'',
@@ -169,7 +168,7 @@ function pm_drush_command() {
  * Command callback. Show a list of modules and status.
  *
  */
-function drush_pm_list() {
+function drush_grn_list() {
   //--package
   $package_filter = array();
   $package = strtolower(drush_get_option('package'));
@@ -197,7 +196,7 @@ function drush_pm_list() {
   }
   foreach ($type_filter as $type) {
     if (!in_array($type, $all_types)) { //TODO: this kind of chck can be implemented drush-wide
-      return drush_set_error('DRUSH_PM_INVALID_PROJECT_TYPE', dt('!type is not a valid project type.', array('!type' => $type)));
+      return drush_set_error('DRUSH_grn_INVALID_PROJECT_TYPE', dt('!type is not a valid project type.', array('!type' => $type)));
   }
   }
 
@@ -216,15 +215,15 @@ function drush_pm_list() {
 
   foreach ($status_filter as $status) {
     if (!in_array($status, $status_filter)) { //TODO: this kind of chck can be implemented drush-wide
-      return drush_set_error('DRUSH_PM_INVALID_PROJECT_TYPE', dt('!status is not a valid project status.', array('!status' => $status)));
+      return drush_set_error('DRUSH_grn_INVALID_PROJECT_TYPE', dt('!status is not a valid project status.', array('!status' => $status)));
   }
   }
 
   $header[] = dt('Version');
   $rows[] = $header;
 
-  $projects = drush_pm_get_projects();
-  uasort($projects, '_drush_pm_sort_projects');
+  $projects = drush_grn_get_projects();
+  uasort($projects, '_drush_grn_sort_projects');
 
   $major_version = drush_drupal_major_version();
   foreach ($projects as $project) {
@@ -281,7 +280,7 @@ function drush_pm_list() {
 /**
  * Command callback. Enable one or more projects.
  */
-function drush_pm_enable() {
+function drush_grn_enable() {
   $args = func_get_args();
 
   $project_info = drush_get_projects();
@@ -289,13 +288,13 @@ function drush_pm_enable() {
   // Classify $args in themes, modules or unknown.
   $modules = array();
   $themes = array();
-  drush_pm_classify_projects($args, $modules, $themes, $project_info);
+  drush_grn_classify_projects($args, $modules, $themes, $project_info);
   $projects = array_merge($modules, $themes);
   $unknown = array_diff($args, $projects);
 
   // Discard and set an error for each unknown project.
   foreach ($unknown as $project) {
-    drush_set_error('DRUSH_PM_ENABLE_PROJECT_NOT_FOUND', dt('!project was not found and will not be enabled.', array('!project' => $project)));
+    drush_set_error('DRUSH_grn_ENABLE_PROJECT_NOT_FOUND', dt('!project was not found and will not be enabled.', array('!project' => $project)));
   }
 
   // Discard already enabled projects.
@@ -327,7 +326,7 @@ function drush_pm_enable() {
       }
     }
     $all_dependencies = array_unique($all_dependencies);
-    $enabled = array_keys(array_filter(drush_get_modules(), 'pm_is_enabled'));
+    $enabled = array_keys(array_filter(drush_get_modules(), 'grn_is_enabled'));
     $needed = array_diff($all_dependencies, $enabled);
     $modules = $needed + $modules;
 
@@ -338,7 +337,7 @@ function drush_pm_enable() {
       // See @system_modules_submit
       if (!drupal_check_module($module)) {
         unset($modules[$key]);
-        drush_set_error('DRUSH_PM_ENABLE_MODULE_UNMEET_REQUIREMENTS', dt('Module !module don\'t meet the requirements to be enabled.', array('!module' => $module)));
+        drush_set_error('DRUSH_grn_ENABLE_MODULE_UNMEET_REQUIREMENTS', dt('Module !module don\'t meet the requirements to be enabled.', array('!module' => $module)));
       }
     }
   }
@@ -363,8 +362,8 @@ function drush_pm_enable() {
   // Enable modules and pass dependency validation in form submit.
   if (!empty($modules)) {
     drush_module_enable($modules);
-    $current = drupal_map_assoc($enabled, 'pm_true');
-    $processed = drupal_map_assoc($modules, 'pm_true');
+    $current = drupal_map_assoc($enabled, 'grn_true');
+    $processed = drupal_map_assoc($modules, 'grn_true');
     $active_modules = array_merge($current, $processed);
     drush_system_modules_form_submit($active_modules);
   }
@@ -376,7 +375,7 @@ function drush_pm_enable() {
       drush_log(dt('!project was enabled successfully.', array('!project' => $project->name)), 'ok');
     }
     else {
-      drush_set_error('DRUSH_PM_ENABLE_PROJECT_ISSUE', dt('There was a problem enabling !project.', array('!project' => $project->name)));
+      drush_set_error('DRUSH_grn_ENABLE_PROJECT_ISSUE', dt('There was a problem enabling !project.', array('!project' => $project->name)));
     }
   }
 }
@@ -384,7 +383,7 @@ function drush_pm_enable() {
 /**
  * Command callback. Disable one or more projects.
  */
-function drush_pm_disable() {
+function drush_grn_disable() {
   $args = func_get_args();
 
   $project_info = drush_get_projects();
@@ -392,13 +391,13 @@ function drush_pm_disable() {
   // classify $args in themes, modules or unknown
   $modules = array();
   $themes = array();
-  drush_pm_classify_projects($args, $modules, $themes, $project_info);
+  drush_grn_classify_projects($args, $modules, $themes, $project_info);
   $projects = array_merge($modules, $themes);
   $unknown = array_diff($args, $projects);
 
   // Discard and set an error for each unknown project.
   foreach ($unknown as $project) {
-    drush_set_error('DRUSH_PM_ENABLE_PROJECT_NOT_FOUND', dt('!project was not found and will not be disabled.', array('!project' => $project)));
+    drush_set_error('DRUSH_grn_ENABLE_PROJECT_NOT_FOUND', dt('!project was not found and will not be disabled.', array('!project' => $project)));
   }
 
   // Discard already disabled projects.
@@ -425,7 +424,7 @@ function drush_pm_disable() {
 
   // Add enabled dependents to list of modules to disable.
   if (!empty($modules)) {
-    $enabled = array_keys(array_filter(drush_get_modules(), 'pm_is_enabled'));
+    $enabled = array_keys(array_filter(drush_get_modules(), 'grn_is_enabled'));
     $dependents = drush_module_dependents($modules, $project_info);
     $dependents = array_unique($dependents);
     $dependents = array_intersect($dependents, $enabled);
@@ -453,7 +452,7 @@ function drush_pm_disable() {
   if (!empty($modules)) {
     drush_module_disable($modules);
     $active_modules = array_diff($enabled, $modules);
-    $active_modules = drupal_map_assoc($active_modules, 'pm_true');
+    $active_modules = drupal_map_assoc($active_modules, 'grn_true');
     drush_system_modules_form_submit($active_modules);
   }
 
@@ -464,20 +463,20 @@ function drush_pm_disable() {
       drush_log(dt('!project was disabled successfully.', array('!project' => $project->name)), 'ok');
     }
     else {
-      drush_set_error('DRUSH_PM_DISABLE_PROJECT_ISSUE', dt('There was a problem disabling !project.', array('!project' => $project->name)));
+      drush_set_error('DRUSH_grn_DISABLE_PROJECT_ISSUE', dt('There was a problem disabling !project.', array('!project' => $project->name)));
     }
   }
 }
 
 /**
  * Wrapper of drupal_get_projects() with additional information used by
- * pm- commands.
+ * grn- commands.
  *
  * @return
  *   An array containing info for all available modules and themes w/additional
  *   info.
  */
-function drush_pm_get_projects() {
+function drush_grn_get_projects() {
   $projects = drush_get_projects();
   foreach ($projects as $key => $project) {
     if (empty($project->info['package'])) {
@@ -497,8 +496,8 @@ function drush_pm_get_projects() {
  * @param $themes
  *   Empty array to be filled with themes in $projects.
  */
-function drush_pm_classify_projects(&$projects, &$modules, &$themes, $project_info) {
-  _drush_pm_expand_projects($projects, $project_info);
+function drush_grn_classify_projects(&$projects, &$modules, &$themes, $project_info) {
+  _drush_grn_expand_projects($projects, $project_info);
   foreach ($projects as $project) {
     if (!isset($project_info[$project])) {
       continue;
@@ -515,25 +514,25 @@ function drush_pm_classify_projects(&$projects, &$modules, &$themes, $project_in
 /**
  * Command callback. Show detailed info for one or more projects.
  */
-function drush_pm_info() {
+function drush_grn_info() {
   $args = func_get_args();
 
-  $project_info = drush_pm_get_projects();
-  _drush_pm_expand_projects($args, $project_info);
+  $project_info = drush_grn_get_projects();
+  _drush_grn_expand_projects($args, $project_info);
 
   foreach ($args as $project) {
     if (isset($project_info[$project])) {
       $info = $project_info[$project];
     }
     else {
-      drush_set_error('DRUSH_PM_INFO_PROJECT_NOT_FOUND', dt('!project was not found.', array('!project' => $project)));
+      drush_set_error('DRUSH_grn_INFO_PROJECT_NOT_FOUND', dt('!project was not found.', array('!project' => $project)));
       continue;
     }
     if ($info->type == 'module') {
-      $data = _drush_pm_info_module($info);
+      $data = _drush_grn_info_module($info);
     }
     else {
-      $data = _drush_pm_info_theme($info);
+      $data = _drush_grn_info_theme($info);
     }
     drush_print_table(drush_key_value_to_array_table($data));
     print "\n";
@@ -543,7 +542,7 @@ function drush_pm_info() {
 /**
  * Return a string with general info of a project (module or theme).
  */
-function _drush_pm_info_project($info) {
+function _drush_grn_info_project($info) {
   $major_version = drush_drupal_major_version();
 
   $data['Project'] = $info->name;
@@ -571,10 +570,10 @@ function _drush_pm_info_project($info) {
 /**
  * Return a string with info of a module.
  */
-function _drush_pm_info_module($info) {
+function _drush_grn_info_module($info) {
   $major_version = drush_drupal_major_version();
 
-  $data = _drush_pm_info_project($info);
+  $data = _drush_grn_info_project($info);
   if ($info->schema_version > 0) {
     $schema_version = $info->schema_version;
   }
@@ -612,10 +611,10 @@ function _drush_pm_info_module($info) {
 /**
  * Return a string with info of a theme.
  */
-function _drush_pm_info_theme($info) {
+function _drush_grn_info_theme($info) {
   $major_version = drush_drupal_major_version();
 
-  $data = _drush_pm_info_project($info);
+  $data = _drush_grn_info_project($info);
   if ($major_version == 5) {
     $data['Engine'] = $info->description;
   }
@@ -656,7 +655,7 @@ function _drush_pm_info_theme($info) {
  * @param $project_info
  *   Optional. An array of project info as returned by drush_get_projects().
  */
-function _drush_pm_expand_projects(&$projects, $project_info = array()) {
+function _drush_grn_expand_projects(&$projects, $project_info = array()) {
   if (empty($project_info)) {
     $project_info = drush_get_projects();
   }
@@ -677,7 +676,7 @@ function _drush_pm_expand_projects(&$projects, $project_info = array()) {
  * Command callback. Uninstall one or more modules.
  * // TODO: Use drupal_execute on system_modules_uninstall_confirm_form so that input is validated.
  */
-function drush_pm_uninstall() {
+function drush_grn_uninstall() {
   $modules = func_get_args();
 
   drush_include_engine('drupal', 'environment');
@@ -688,12 +687,12 @@ function drush_pm_uninstall() {
     if (!isset($module_info[$module])) {
       // The module does not exist in the system.
       unset($modules[$key]);
-      drush_set_error('DRUSH_PM_ENABLE_MODULE_NOT_FOUND', dt('Module !module was not found and will not be uninstalled.', array('!module' => $module)));
+      drush_set_error('DRUSH_grn_ENABLE_MODULE_NOT_FOUND', dt('Module !module was not found and will not be uninstalled.', array('!module' => $module)));
     }
     else if ($module_info[$module]->status) {
       // The module is enabled.
       unset($modules[$key]);
-      drush_set_error('DRUSH_PM_UNINSTALL_ACTIVE_MODULE', dt('!module is not disabled. Use `pm-disable` command before `pm-uninstall`.', array('!module' => $module)));
+      drush_set_error('DRUSH_grn_UNINSTALL_ACTIVE_MODULE', dt('!module is not disabled. Use `grn-disable` command before `grn-uninstall`.', array('!module' => $module)));
     }
     else if ($module_info[$module]->schema_version == -1) { // SCHEMA_UNINSTALLED
       // The module is uninstalled.
@@ -728,14 +727,14 @@ function drush_pm_uninstall() {
  * @param $module
  *  A module object as returned by drush_get_modules().
  */
-function pm_is_enabled($module) {
+function grn_is_enabled($module) {
   return $module->status;
 }
 
 /**
  * Callback helper.
  */
-function pm_true() {
+function grn_true() {
   return TRUE;
 }
 
@@ -745,7 +744,7 @@ function pm_true() {
  * TODO: Improve logic so this works even if your project directory is not
  * named the same as the project name.
  */
-function pm_get_project_path($projects, $lookup) {
+function grn_get_project_path($projects, $lookup) {
   foreach ($projects as $name => $project) {
     if (!isset($project['path'])  && $name != 'drupal') {
       // looks for an enabled module.
@@ -775,13 +774,13 @@ function pm_get_project_path($projects, $lookup) {
  * A drush command callback. Show release info for given project(s).
  *
  **/
-function drush_pm_releases() {
+function drush_grn_releases() {
   // We don't provide for other options here, so we supply an explicit path.
-  drush_include_engine('update_info', 'drupal', NULL, DRUSH_BASE_PATH . '/commands/pm/update_info');
+  drush_include_engine('update_info', 'drupal', NULL, DRUSH_BASE_PATH . '/commands/grn/update_info');
 
   $projects = func_get_args();
   $projects = drupal_map_assoc($projects);
-  $info = pm_get_project_info($projects);
+  $info = grn_get_project_info($projects);
   $project_info = drush_get_projects();
 
   $rows[] = array(dt('Project'), dt('Release'), dt('Date'), dt('Status'));
@@ -817,7 +816,7 @@ function drush_pm_releases() {
         $status[] = dt('Recommended');
       }
       if ($release['version_extra'] == 'dev') {
-        $status[] = dt('Development');
+        $status[] = dt('Develogrnent');
       }
       if (isset($project_info[$key])) {
         if ($project_info[$key]->info['version'] == $release['version']) {
@@ -841,7 +840,7 @@ function drush_pm_releases() {
   }
 
   if (count($rows) == 1) {
-    return drush_set_error('DRUSH_PM_PROJECT_NOT_FOUND', dt('No information available.'));
+    return drush_set_error('DRUSH_grn_PROJECT_NOT_FOUND', dt('No information available.'));
   }
   else {
     return drush_print_table($rows, TRUE);
@@ -851,33 +850,33 @@ function drush_pm_releases() {
 /**
  * Command callback. Refresh update status information.
  */
-function drush_pm_refresh() {
+function drush_grn_refresh() {
   // We don't provide for other options here, so we supply an explicit path.
-  drush_include_engine('update_info', 'drupal', NULL, DRUSH_BASE_PATH . '/commands/pm/update_info');
+  drush_include_engine('update_info', 'drupal', NULL, DRUSH_BASE_PATH . '/commands/grn/update_info');
 
-  _pm_refresh();
+  _grn_refresh();
 }
 
 /**
  * Command callback. Execute updatecode.
  */
-function drush_pm_update() {
+function drush_grn_update() {
   // Signal that we will update drush core after the drush modules
   // are updated, if an update to core is available.
-  drush_set_context('DRUSH_PM_UPDATE_ALL', TRUE);
+  drush_set_context('DRUSH_grn_UPDATE_ALL', TRUE);
 
-  // Call pm-updatecode.  updatedb will be called in the post-update process.
+  // Call grn-updatecode.  updatedb will be called in the post-update process.
   $args = func_get_args();
-  array_unshift($args, 'pm-updatecode');
+  array_unshift($args, 'grn-updatecode');
   call_user_func_array('drush_invoke', $args);
 
-  // pm-updatecode will not do a core update of Drupal
+  // grn-updatecode will not do a core update of Drupal
   // on the same invocation where non-core modules are
   // updated.  If there is a core update available, then
-  // call pm-updatecode a second time to update core
+  // call grn-updatecode a second time to update core
   // (but only if the first run finished successfully).
-  if (drush_get_context('DRUSH_PM_CORE_UPDATE_AVAILABLE', FALSE) && (drush_get_error() == DRUSH_SUCCESS)) {
-    call_user_func_array('drush_invoke', array('pm-updatecode', 'drupal'));
+  if (drush_get_context('DRUSH_grn_CORE_UPDATE_AVAILABLE', FALSE) && (drush_get_error() == DRUSH_SUCCESS)) {
+    call_user_func_array('drush_invoke', array('grn-updatecode', 'drupal'));
   }
 }
 
@@ -885,7 +884,7 @@ function drush_pm_update() {
  * Post-command callback.
  * Execute updatedb command after an updatecode - user requested `update`.
  */
-function drush_pm_post_pm_update() {
+function drush_grn_post_grn_update() {
   // Use drush_backend_invoke to start a subprocess. Cleaner that way.
   drush_backend_invoke('updatedb');
 }
@@ -893,7 +892,7 @@ function drush_pm_post_pm_update() {
 /**
  * Post-command callback for updatecode. Notify about any pending DB updates.
  */
-function drush_pm_post_pm_updatecode() {
+function drush_grn_post_grn_updatecode() {
   // Make sure the installation API is available
   require_once drush_get_context('DRUSH_DRUPAL_ROOT') . '/includes/install.inc';
 
@@ -952,7 +951,7 @@ function delete_dir($dir) {
  * Determine a candidate destination directory for a particular site path and
  * return it if it exists, optionally attempting to create the directory.
  */
-function pm_dl_destination_lookup($type, $drupal_root, $sitepath, $create = FALSE) {
+function grn_dl_destination_lookup($type, $drupal_root, $sitepath, $create = FALSE) {
   switch ($type) {
     case 'module':
       // Prefer sites/all/modules/contrib if it exists.
@@ -991,7 +990,7 @@ function pm_dl_destination_lookup($type, $drupal_root, $sitepath, $create = FALS
  * Return the best destination for a particular download type we can find,
  * given the drupal and site contexts.
  */
-function pm_dl_destination($type) {
+function grn_dl_destination($type) {
   // Attempt 0: Use the user specified destination directory, if it exists.
   $destination = drush_get_option('destination');
   if (!empty($destination)) {
@@ -1008,7 +1007,7 @@ function pm_dl_destination($type) {
       return $destination;
     }
     else {
-      return drush_set_error('DRUSH_PM_NO_DESTINATION', dt('The destination directory !destination does not appear to exist.', array('!destination' => $destination)));
+      return drush_set_error('DRUSH_grn_NO_DESTINATION', dt('The destination directory !destination does not appear to exist.', array('!destination' => $destination)));
     }
   }
 
@@ -1025,23 +1024,23 @@ function pm_dl_destination($type) {
 
   // Attempt 1: If we are in a specific site directory, and the destination directory already exists, then we use that.
   if (empty($destination) && $site_root && $in_site_directory) {
-    $destination = pm_dl_destination_lookup($type, $drupal_root, $full_site_root);
+    $destination = grn_dl_destination_lookup($type, $drupal_root, $full_site_root);
   }
   // Attempt 2: If the destination directory already exists for sites/all, then we use that.
   if (empty($destination) && $drupal_root) {
-    $destination = pm_dl_destination_lookup($type, $drupal_root, $sites_all);
+    $destination = grn_dl_destination_lookup($type, $drupal_root, $sites_all);
   }
   // Attempt 3: If a specific (non default) site directory exists and sites/all does not exist, then we create destination in the site specific directory.
   if (empty($destination) && $site_root && $site_root !== 'sites/default' && is_dir($full_site_root) && !is_dir($sites_all)) {
-    $destination = pm_dl_destination_lookup($type, $drupal_root, $full_site_root, TRUE);
+    $destination = grn_dl_destination_lookup($type, $drupal_root, $full_site_root, TRUE);
   }
   // Attempt 4: If sites/all exists, then we create destination in the sites/all directory.
   if (empty($destination) && is_dir($sites_all)) {
-    $destination = pm_dl_destination_lookup($type, $drupal_root, $sites_all, TRUE);
+    $destination = grn_dl_destination_lookup($type, $drupal_root, $sites_all, TRUE);
   }
   // Attempt 5: If site directory exists (even default), then we create destination in the this directory.
   if (empty($destination) && $site_root && is_dir($full_site_root)) {
-    $destination = pm_dl_destination_lookup($type, $drupal_root, $full_site_root, TRUE);
+    $destination = grn_dl_destination_lookup($type, $drupal_root, $full_site_root, TRUE);
   }
   // Attempt 6: If we didn't find a valid directory yet (or we somehow found one that doesn't exist) we always fall back to the current directory.
   if (empty($destination) || !is_dir($destination)) {
@@ -1056,7 +1055,7 @@ function pm_dl_destination($type) {
  *
  * @param $requests an array of project names
  */
-function pm_parse_project_version($requests) {
+function grn_parse_project_version($requests) {
   $requestdata = array();
   $drupal_version_default = drush_get_context('DRUSH_DRUPAL_MAJOR_VERSION', 6) . '.x';
   // ignore-bootstrap is a temporary hack. You can't currently download a 7.x
@@ -1076,7 +1075,7 @@ function pm_parse_project_version($requests) {
       $project = trim(substr($request, 0, strlen($request) - strlen($matches[0])), ' -');
 
       if ($matches[1] == 'HEAD' || $matches[2] == 'HEAD') {
-        drush_set_error('DRUSH_PM_HEAD', 'Can\'t download HEAD releases because Drupal.org project information only provides for numbered release nodes.');
+        drush_set_error('DRUSH_grn_HEAD', 'Can\'t download HEAD releases because Drupal.org project information only provides for numbered release nodes.');
         continue;
       }
       if (!empty($matches[2])) {
@@ -1124,7 +1123,7 @@ function pm_parse_project_version($requests) {
   return $requestdata;
 }
 
-function pm_project_types() {
+function grn_project_types() {
   // Lookup the 'Project type' vocabulary to some standard strings.
   $types = array(
     'core' => 'Drupal project',
@@ -1140,7 +1139,7 @@ function pm_project_types() {
 /**
  * Used by dl and updatecode commands to determine how to download/checkout new projects and acquire updates to projects.
  */
-function pm_drush_engine_package_handler() {
+function grn_drush_engine_package_handler() {
   return array(
     'wget' => array(),
     'cvs' => array(
@@ -1163,7 +1162,7 @@ function pm_drush_engine_package_handler() {
 /**
  * Integration with VCS in order to easily commit your changes to projects.
  */
-function pm_drush_engine_version_control() {
+function grn_drush_engine_version_control() {
   return array(
     'svn' => array(
       'signature' => 'svn info %s',
@@ -1205,7 +1204,7 @@ function pm_drush_engine_version_control() {
  * We use a simple object layer because we conceivably need more than one
  * loaded at a time.
  */
-interface drush_pm_version_control {
+interface drush_grn_version_control {
   function pre_update(&$project);
   function rollback($project);
   function post_update($project);
@@ -1217,7 +1216,7 @@ interface drush_pm_version_control {
  * specified order, and return the one that appears to be appropriate for a
  * specific directory.
  */
-function drush_pm_include_version_control($directory = '.') {
+function drush_grn_include_version_control($directory = '.') {
   $version_controls = explode(',', drush_get_option('version-control', 'svn,backup'));
   $version_control_engines = drush_get_engines('version_control');
 
@@ -1237,19 +1236,19 @@ function drush_pm_include_version_control($directory = '.') {
     }
   }
   if (!$engine) {
-    return drush_set_error('DRUSH_PM_NO_VERSION_CONTROL', dt('No valid version control or backup engine found (the --version-control option was set to "!version-control").', array('!version-control' => $version_control)));
+    return drush_set_error('DRUSH_grn_NO_VERSION_CONTROL', dt('No valid version control or backup engine found (the --version-control option was set to "!version-control").', array('!version-control' => $version_control)));
   }
   if (!drush_include_engine('version_control', $engine)) {
     return FALSE;
   }
-  $engine = 'drush_pm_version_control_' . $engine;
+  $engine = 'drush_grn_version_control_' . $engine;
   return new $engine();
 }
 
 /**
  * Command callback. Download Drupal core or any project.
  */
-function drush_pm_download() {
+function drush_grn_download() {
   // Bootstrap to the highest level possible.
   drush_bootstrap_max();
 
@@ -1260,9 +1259,9 @@ function drush_pm_download() {
   }
 
   // Parse out project name and version
-  $requests = pm_parse_project_version($requests);
+  $requests = grn_parse_project_version($requests);
 
-  $project_types = pm_project_types();
+  $project_types = grn_project_types();
   $project_types_xpath = '(value="' . implode('" or value="', $project_types) . '")';
   foreach ($requests as $name => $request) {
     // Don't rely on UPDATE_DEFAULT_URL since we are not fully bootstrapped.
@@ -1283,7 +1282,7 @@ function drush_pm_download() {
 
     if ($xml) {
       if ($error = $xml->xpath('/error')) {
-        drush_set_error('DRUSH_PM_COULD_NOT_LOAD_UPDATE_FILE', $error[0]);
+        drush_set_error('DRUSH_grn_COULD_NOT_LOAD_UPDATE_FILE', $error[0]);
       }
       else {
         // Try to get the specified release.
@@ -1319,7 +1318,7 @@ function drush_pm_download() {
         }
 
         if (empty($releases)) {
-          drush_log(dt('There is no *recommended* release for project !project on Drupal !drupal_version. Ask the maintainer to review http://drupal.org/node/197584 and create/recommend a release in order to be compatible with drush and the drupal.org security broadcast system. A recommended development snapshot release is sufficient. Alternatively, run pm-releases command and explicity pm-download any non-recommended release that might be available.', array('!drupal_version' => $request['drupal_version'], '!project' => $request['name'])), 'ok');
+          drush_log(dt('There is no *recommended* release for project !project on Drupal !drupal_version. Ask the maintainer to review http://drupal.org/node/197584 and create/recommend a release in order to be compatible with drush and the drupal.org security broadcast system. A recommended develogrnent snapshot release is sufficient. Alternatively, run grn-releases command and explicity grn-download any non-recommended release that might be available.', array('!drupal_version' => $request['drupal_version'], '!project' => $request['name'])), 'ok');
           continue;
         }
 
@@ -1339,10 +1338,10 @@ function drush_pm_download() {
 
         // Create basic project array.
         $project = $request;
-        if ($project['base_project_path'] = pm_dl_destination($release['type'])) {
+        if ($project['base_project_path'] = grn_dl_destination($release['type'])) {
           $project['full_project_path'] = $project['base_project_path'] .  $request['name'];
           $project['project_type'] = $release['type'];
-          if (!$version_control = drush_pm_include_version_control($project['base_project_path'])) {
+          if (!$version_control = drush_grn_include_version_control($project['base_project_path'])) {
             return FALSE;
           }
           if (package_handler_install_project($project, $release)) {
@@ -1350,10 +1349,10 @@ function drush_pm_download() {
             // allow commandfiles that implement the adjust-download-destination
             // hook to pick a new default location for the project.
             if (drush_get_option('destination', FALSE) === FALSE) {
-              drush_pm_relocate_project($project, $release);
+              drush_grn_relocate_project($project, $release);
             }
             drush_log(dt("Project !project (!version) downloaded to !dest.", array('!project' => $request['name'], '!version' => $release['version'], '!dest' => $project['full_project_path'])), 'success');
-            drush_command_invoke_all('drush_pm_post_download', $project, $release);
+            drush_command_invoke_all('drush_grn_post_download', $project, $release);
             $version_control->post_download($project);
           }
         }
@@ -1361,7 +1360,7 @@ function drush_pm_download() {
     }
     else {
       // We are not getting here since drupal.org always serves an XML response.
-      drush_set_error('DRUSH_PM_DOWNLOAD_FAILED', dt('Could not download project status information from !url', array('!url' => $url)));
+      drush_set_error('DRUSH_grn_DOWNLOAD_FAILED', dt('Could not download project status information from !url', array('!url' => $url)));
     }
 
     unset($error, $release, $releases, $types);
@@ -1369,7 +1368,7 @@ function drush_pm_download() {
 }
 
 /**
- * drush_pm_relocate_project moves projects that should be relocated to a different
+ * drush_grn_relocate_project moves projects that should be relocated to a different
  * installation directory to the location they belong in.  For example,
  * modules that are only collections of drush commands will be installed
  * to $HOME/.drush.
@@ -1379,11 +1378,11 @@ function drush_pm_download() {
  * Every drush commandfile is given a chance to examine the project contents
  * and decide where the project should be located.
  */
-function drush_pm_relocate_project(&$project, $release) {
+function drush_grn_relocate_project(&$project, $release) {
   // Call the get-install-location hook to see if any drush commandfiles
   // would like to adjust the install location for this project.
   // drush_command_invoke_all() allows the first parameter to be passed by reference.
-  drush_command_invoke_all_ref('drush_pm_adjust_download_destination', $project, $release);
+  drush_command_invoke_all_ref('drush_grn_adjust_download_destination', $project, $release);
 
   if (isset($project['project_install_location']) && ($project['full_project_path'] != $project['project_install_location'])) {
     if (drush_move_dir($project['full_project_path'], $project['project_install_location'], TRUE)) {
@@ -1402,7 +1401,7 @@ function drush_pm_relocate_project(&$project, $release) {
  * /usr/share/drush/commands if it exists, or $HOME/.drush if the
  * site-wide location does not exist.
  */
-function pm_drush_pm_adjust_download_destination(&$project, $release) {
+function grn_drush_grn_adjust_download_destination(&$project, $release) {
   // If this project is a module, but it has no .module file, then
   // check to see if it contains drush commands.  If that is all
   // that it contains, then install it to $HOME/.drush.
