@@ -3,14 +3,8 @@
 
 /**
  * @file
- *  The drush Package Manager
+ *  Git Release Notes: Drush Extension
  *
- * Terminology:
- * - Request: a requested package (string or keyed array), with a project name and (optionally) version.
- * - Project: a drupal.org project, such as cck or zen.
- * - Version: a requested version, such as 1.0 or 1.x-dev.
- * - Release: a specific release of a project, with associated metadata (from the drupal.org update service).
- * - Package: the collection of files that make up a release.
  */
 
 /**
