@@ -8,46 +8,6 @@
  */
 
 /**
- * Project is a user requested version update.
- */
-define('DRUSH_PM_REQUESTED_UPDATE', 101);
-
-/**
- * User requested version already installed.
- */
-define('DRUSH_PM_REQUESTED_CURRENT', 102);
-
-/**
- * User requested version already installed.
- */
-define('DRUSH_PM_NO_VERSION', 103);
-
-/**
- * User requested version not found.
- */
-define('DRUSH_PM_REQUESTED_NOT_FOUND', 104);
-
-/**
- * Sort callback function for sorting projects
- * First by type, second by package and third by name
- *
- * Special handling for 'Package' on modules and themes.
- */
-function _drush_pm_sort_projects($a, $b) {
-  if ($a->type == 'module' && $b->type == 'theme') {
-    return -1;
-  }
-  if ($a->type == 'theme' && $b->type == 'module') {
-    return 1;
-  }
-  $cmp = strcasecmp($a->info['package'], $b->info['package']);
-  if ($cmp == 0) {
-    $cmp = strcasecmp($a->info['name'], $b->info['name']);
-  }
-  return $cmp;
-}
-
-/**
  * Implementation of hook_drush_help().
  */
 function pm_drush_help($section) {
