@@ -30,7 +30,7 @@
  *   An associative array describing your command(s).
  */
 function grn_drush_command() {
-  $items['grn-generate'] = array(
+  $items['generate-notes'] = array(
     'description' => 'Generate release notes with all changes between two Git tags.',
     'arguments' => array(
       'first-tag' => 'The starting point of the list. This should be a valid Git tag name.',
@@ -63,7 +63,7 @@ function grn_drush_command() {
  */
 function grn_drush_help($section) {
   switch ($section) {
-    case 'drush:grn-generate':
+    case 'drush:generate-notes':
       return dt("Generate release notes for a project with all changes between Git two tags. You must be in the root directory of a Git repo.");
   }
 }
@@ -102,7 +102,7 @@ function drush_grn_grn_generate_validate() {
  * any functions you have added in your own modules/themes.
  *
  */
-function drush_grn_grn_generate($tag1, $tag2) {
+function drush_grn_generate_notes($tag1n, $tag2n) {
   $git = 'git';
   $additional = '.';
   if (drush_get_option('git')) {
