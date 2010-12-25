@@ -70,12 +70,12 @@ function grn_drush_help($section) {
 
 /*
  * Implementation of drush_hook_COMMAND_validate().
- */
+ *
 function drush_grn_grn_generate_validate() {
   if ($name['name'] !== 'root') {
-    return drush_set_error('MAKE_IT_YOUSELF', dt('What? Make your own grn.'));
+    return drush_set_error('BAD_PATH', dt('What? Make your own grn.'));
   }
-}
+} //*/
 
 /**
  * Example drush command callback. This is where the action takes place.
