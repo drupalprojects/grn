@@ -30,7 +30,7 @@
  *   An associative array describing your command(s).
  */
 function grn_drush_command() {
-  $items['generate-notes'] = array(
+  $items['release-notes'] = array(
     'description' => 'Generate release notes with all changes between two Git tags.',
     'arguments' => array(
       'first-tag' => 'The starting point of the list. This should be a valid Git tag name.',
@@ -43,7 +43,7 @@ function grn_drush_command() {
       'drush notes 6.x-1.0 6.x-1.1' => 'Generate release notes with all changes between version 6.x-1.0 and 6.x-1.1',
       'drush notes 6.x-1.0 6.x-1.1 --git=/usr/local/git/bin/git' => 'Generate release notes with all changes between version 6.x-1.0 and 6.x-1.1 and the Git binary in /usr/local/git/bin/git.',
     ),
-    'aliases' => array(/*'grn', */'notes'),
+    'aliases' => array('rn'),
 //    'deprecated-aliases' => array('release-notes'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
