@@ -13,8 +13,7 @@
  * Usage:
  * git-release-notes.php [previous-release-tag] [current-release-tag]
  *
- * TODO:
- * - Make this a Drush extension
+ * @todo Make this a Drush extension
  *
  * @author Derek Wright (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
