@@ -43,13 +43,13 @@ if (!is_dir(".git")) {
 }
 
 $rval = '';
-exec("$git show -s --format=%h " . $prev_tag . '^{commit}', $prev, $rval);
+exec("$git show -s --format=%H " . $prev_tag . '^{commit}', $prev, $rval);
 if ($rval) {
   echo "ERROR: $prev_tag is not a tag.";
   exit(1);
 }
 $rval = '';
-exec("$git show -s --format=%h " . $cur_tag . '^{commit}', $cur, $rval);
+exec("$git show -s --format=%H " . $cur_tag . '^{commit}', $cur, $rval);
 if ($rval) {
   echo "ERROR: $cur_tag is not a tag.";
   exit(1);
