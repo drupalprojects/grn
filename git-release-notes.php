@@ -123,6 +123,8 @@ function get_changes($prev, $cur, $git) {
     print implode("\n", $logs);
     exit(1);
   }
+  // Make sure I get the first one. W/out this, it would miss the latest commit.
+  $changes[get_issue_type($logs[0])][] = $logs[0];
   while (($line = next($logs)) !== false) {
       if (strpos($line,"\n") !== false) {
         // Skip blank lines that are left behind in the messages.
