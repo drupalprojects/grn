@@ -110,7 +110,7 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
     drush_log('git log returned an error.', 'error');
   }
   $output = drush_shell_exec_output();
-  $changes[_drush_grn_get_issue_type($output[0])][] = $line;
+  $changes[_drush_grn_get_issue_type($output[0])][] = $logs[0];
   while (($line = next($output)) !== false) {
       if ($line == '') {
         // Skip blank lines that are left behind in the messages.
