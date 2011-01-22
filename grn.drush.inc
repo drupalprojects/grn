@@ -59,7 +59,7 @@ function grn_drush_command() {
 /**
  * Implementation of drush_hook_COMMAND().
  */
-function drush_grn_release_notes($tag1, $tag2) {
+function drush_grn_release_notes($tag1n, $tag2n) {
   $git = 'git';
   $additional = '.';
   if (drush_get_option('git')) {
