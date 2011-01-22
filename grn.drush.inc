@@ -33,7 +33,7 @@ function grn_drush_help($section) {
  */
 function grn_drush_command() {
   $items = array();
-
+  
   // The 'release-notes' command
   $items['release-notes'] = array(
     'description' => 'Generate release notes using all commits between two tags',
