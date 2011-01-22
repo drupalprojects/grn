@@ -80,12 +80,12 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
-  _drush_grn_print_changes($changes);
+  _drush_grn_print_changes($changes, tag1n);
 }
 
 // Other functions
 
-function _drush_grn_print_changes($changes) {
+function _drush_grn_print_changes($changes, $prev_tag) {
   $return = "<p>Changes since $prev_tag:</p>\n";
   $return .= "<ul>\n";
   foreach ($changes as $type => $issues) {
