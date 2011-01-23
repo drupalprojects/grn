@@ -105,7 +105,7 @@ function _drush_grn_print_changes($changes, $prev_tag) {
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
   if (!drush_shell_exec("%s log -s --format=%%B %s..%s", $git, $tag1, $tag2)) {
-    drush_log('git log returned an error.', 'error');
+    return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
   $changes[_drush_grn_get_issue_type($output[0])][] = $output[0];
