@@ -85,6 +85,9 @@ function drush_grn_release_notes($tag1n, $tag2n) {
 
 // Other functions
 
+/**
+ * Generate the output
+ */
 function _drush_grn_print_changes($changes, $prev_tag) {
   $return = "<p>Changes since $prev_tag:</p>\n";
   $return .= "<ul>\n";
@@ -102,6 +105,9 @@ function _drush_grn_print_changes($changes, $prev_tag) {
   return $return;
 }
 
+/**
+ * Get the changes, and return them in an array sorted by issue type, if available
+ */
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
   if (!drush_shell_exec("%s log -s --format=%%B %s..%s", $git, $tag1, $tag2)) {
@@ -119,6 +125,9 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   return $changes;
 }
 
+/**
+ * Return the pretty name of the category of the first issue mentioned in the message
+ */
 function _drush_grn_get_issue_type($line) {
   preg_match('/#(\d+)/', $line, $matches);
   if (!isset($matches[1]) || empty($matches[1])) {
@@ -141,6 +150,9 @@ function _drush_grn_get_issue_type($line) {
   return $return;
 }
 
+/**
+ * Get the issue page contents and pull it apart to get the category
+ */
 function _drush_grn_get_page_data($issue) {
   $raw = file_get_contents("http://drupal.org/node/" . $issue);
   // Get type
