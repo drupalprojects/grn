@@ -80,7 +80,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
-  _drush_grn_print_changes($changes, $tag1n);
+  echo _drush_grn_print_changes($changes, $tag1n);
 }
 
 // Other functions
@@ -104,13 +104,11 @@ function _drush_grn_print_changes($changes, $prev_tag) {
 
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
-  $rval = '';
-  $logs = array();
   if (!drush_shell_exec("%s log -s --format=format:%%B %s..%s", $git, $tag1, $tag2)) {
     drush_log('git log returned an error.', 'error');
   }
   $output = drush_shell_exec_output();
-  $changes[_drush_grn_get_issue_type($output[0])][] = $logs[0];
+  $changes[_drush_grn_get_issue_type($output[0])][] = $output[0];
   while (($line = next($output)) !== false) {
       if ($line == '') {
         // Skip blank lines that are left behind in the messages.
