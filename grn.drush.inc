@@ -72,11 +72,11 @@ function drush_grn_release_notes($tag1n, $tag2n) {
     drush_log("This must be run from the root directory of your Git project.");
   }
   if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag1n)) {
-    drush_log(dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)), 'error');
+    drush_set_error(dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)), 'error');
   }
   $tag1 = drush_shell_exec_output();
   if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag2n)) {
-    drush_log(dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
+    drush_set_error(dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
