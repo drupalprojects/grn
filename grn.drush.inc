@@ -73,10 +73,12 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag1n)) {
     drush_set_error(dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)), 'error');
+    exit 1;
   }
   $tag1 = drush_shell_exec_output();
   if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag2n)) {
     drush_set_error(dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
+    exit 1;
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
