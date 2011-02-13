@@ -51,6 +51,7 @@ function grn_drush_command() {
       'drush rn 6.x-1.0 origin/6.x-1.x' => 'If you don\'t have the branch locally, you might need to use "[remote-name]/[branch-name]"',
     ),
     'aliases' => array('rn'),
+    'deprecated-aliases' => array('grn'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
   return $items;
