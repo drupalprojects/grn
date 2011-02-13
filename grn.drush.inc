@@ -95,7 +95,7 @@ function _drush_grn_print_changes($changes, $prev_tag) {
   foreach ($changes as $type => $issues) {
     $return .= "<li>$type<ul>\n";
     foreach ($issues as $number => $line) {
-      $print = '<li>' . preg_replace('/^Patch /', '', preg_replace('/^- /', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line))) . "</li>\n";
+      $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
       if ($print != "<li></li>\n") {
         $return .= $print;
       }
