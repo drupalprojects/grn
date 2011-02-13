@@ -134,7 +134,7 @@ function _drush_grn_get_issue_type($line) {
   if (!isset($matches[1]) || empty($matches[1])) {
     return $return = 'Other changes:';
   }
-  $issue = trim($matches[1], ' .a..zA..Z#:/');
+  $issue = trim($matches[1], ' .a..zA..Z#:/'); // @todo Is this really necessary?
   if (!is_numeric($issue)) {
     echo "ERROR: '$issue' is not a valid issue number.";
   }
