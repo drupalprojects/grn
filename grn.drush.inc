@@ -115,7 +115,7 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
-  $changes[_drush_grn_get_issue_type($output[0])][] = $output[0];
+  $changes[_drush_grn_get_issue_type($output[0])][] = $output[0]; // Otherwise, next() would skip first
   while (($line = next($output)) !== false) {
       if ($line == '') {
         // Skip blank lines that are left behind in the messages.
