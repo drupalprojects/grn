@@ -160,8 +160,8 @@ function _drush_grn_get_page_data($issue) {
   $init = strstr($raw, '  <div class="node-content">
     <div class="project-issue"><div id="project-summary-container" class="clear-block"><div id="project-issue-summary-table" class="summary"><table>
 ');
-  $tfront = strstr($init,'<tr class="even"><td>Category:</td><td>'); // Find what's after the start tag
-  $type = strstr($tfront,'</td> </tr>
- <tr class="odd"><td>Priority:</td><td>',true); // And filter it to get the count
+  $tfront = strstr($init, '<tr class="even"><td>Category:</td><td>'); // Find what's after the start tag
+  $type = strstr($tfront, '</td> </tr>
+ <tr class="odd"><td>Priority:</td><td>', true); // And filter it to get the count
   return $type;
 }
