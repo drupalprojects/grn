@@ -19,7 +19,8 @@
  * @author Josh The Geek (http://drupal.org/user/926382)
  *
  */
-
+echo 'Do NOT use this script! It does unholy things like ping d.o for every commit!';
+exit 1;
 if (count($argv) < 3) {
   usage("You must specify the release tags to compare.");
 }
