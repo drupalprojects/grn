@@ -61,6 +61,7 @@ function grn_drush_command() {
  * Implementation of drush_hook_COMMAND().
  */
 function drush_grn_release_notes($tag1n, $tag2n) {
+  return drush_set_error('DRUSH_GRN_DONT_USE', 'Do NOT use this script! It does unholy things like ping d.o for every commit!');
   $git = 'git';
   $additional = '.';
   if (drush_get_option('git')) {
