@@ -66,10 +66,8 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   $additional = '.';
   if (drush_get_option('git')) {
     $git = drush_get_option('git');
-    $additional = ' with Git at !git.';
   }
   $get = FALSE; // Set this to TRUE to get category. Otherwise, not used.
-  //drush_log(dt('Generating release notes between !tag1 and !tag2' . $additional, array('!tag1' => $tag1n, '!tag2' => $tag2n, '!git' => $git)));
   chdir(getcwd());
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
