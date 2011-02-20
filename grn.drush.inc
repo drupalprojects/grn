@@ -68,6 +68,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
     $git = drush_get_option('git');
     $additional = ' with Git at !git.';
   }
+  $get = FALSE; // Set this to TRUE to get category. Otherwise, not used.
   //drush_log(dt('Generating release notes between !tag1 and !tag2' . $additional, array('!tag1' => $tag1n, '!tag2' => $tag2n, '!git' => $git)));
   chdir(getcwd());
   if (!is_dir(".git")) {
@@ -81,7 +82,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
   }
   $tag2 = drush_shell_exec_output();
-  $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
+  $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git, $get);
   echo _drush_grn_print_changes($changes, $tag1n);
 }
 
@@ -94,14 +95,14 @@ function _drush_grn_print_changes($changes, $prev_tag) {
   $return = "<p>Changes since $prev_tag:</p>\n";
   $return .= "<ul>\n";
   foreach ($changes as $type => $issues) {
-    $return .= "<li>$type<ul>\n";
+    if ($type != '') { $return .= "<li>$type<ul>\n"; }
     foreach ($issues as $number => $line) {
       $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
       if ($print != "<li></li>\n") {
         $return .= $print;
       }
     }
-    $return .= "</ul></li>\n";
+    if ($type != '') { $return .= "</ul></li>\n"; }
   }
   $return .= "</ul>\n";
   return $return;
@@ -110,19 +111,19 @@ function _drush_grn_print_changes($changes, $prev_tag) {
 /**
  * Get the changes, and return them in an array sorted by issue type, if available
  */
-function _drush_grn_get_changes($tag1, $tag2, $git) {
+function _drush_grn_get_changes($tag1, $tag2, $git, $get) {
   $changes = array();
   if (!drush_shell_exec("%s log -s --format=%%B %s..%s", $git, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
-  $changes[_drush_grn_get_issue_type($output[0])][] = $output[0]; // Otherwise, next() would skip first
+  $changes[_drush_grn_get_issue_type($output[0], $get)][] = $output[0]; // Otherwise, next() would skip first
   while (($line = next($output)) !== false) {
       if ($line == '') {
         // Skip blank lines that are left behind in the messages.
         continue;
       }
-      $changes[_drush_grn_get_issue_type($line)][] = $line;
+      $changes[_drush_grn_get_issue_type($line, $get)][] = $line;
     }
   return $changes;
 }
@@ -130,7 +131,12 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
 /**
  * Return the pretty name of the category of the first issue mentioned in the message
  */
-function _drush_grn_get_issue_type($line) {
+function _drush_grn_get_issue_type($line, $get = FALSE) {
+  // Only get type if $get is TRUE
+  if (!$get) {
+    $return = '';
+    return $return;
+  }
   preg_match('/#(\d+)/', $line, $matches);
   if (!isset($matches[1]) || empty($matches[1])) {
     return $return = 'Other changes:';
