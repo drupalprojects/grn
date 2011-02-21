@@ -43,6 +43,7 @@ function grn_drush_command() {
     ),
     'options' => array(
       'git' => 'Path to the git binary, defaults to "git"',
+      'commit-count' => 'If set, output will show the number of commits between the two tags',
     ),
     'examples' => array(
       'drush release-notes 6.x-1.0 6.x-1.1' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1',
@@ -81,7 +82,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git, $get);
-  echo _drush_grn_print_changes($changes, $tag1n);
+  echo _drush_grn_print_changes($changes, $tag1n, $tag1[0], $tag2[0], $git);
   return true;
 }
 
@@ -90,8 +91,15 @@ function drush_grn_release_notes($tag1n, $tag2n) {
 /**
  * Generate the output
  */
-function _drush_grn_print_changes($changes, $prev_tag) {
-  $return = "<p>Changes since $prev_tag:</p>\n";
+function _drush_grn_print_changes($changes, $prev_tag, $tag1, $tag2, $git) {
+  $return = "<p>Changes since $prev_tag";
+  if (drush_get_option('commit-count')) {
+    if (!drush_shell_exec("%s log --pretty=oneline %s..%s | wc -l", $git, $tag1, $tag2)) {
+      return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
+    }
+    echo ' (' . trim(drush_shell_exec_output()) . 'commits)';
+  }
+  echo ":</p>\n";
   $return .= "<ul>\n";
   foreach ($changes as $type => $issues) {
     if ($type != '') { $return .= "<li>$type<ul>\n"; }
