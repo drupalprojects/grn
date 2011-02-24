@@ -92,9 +92,9 @@ function drush_grn_release_notes($tag1n, $tag2n) {
 function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
   $return = "<p>Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
-    echo ' (' . trim(drush_get_option('commit-count')) . 'commits)';
+    $return .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
-  echo ":</p>\n";
+  $return .= ":</p>\n";
   $return .= "<ul>\n";
   foreach ($issues as $number => $line) {
     $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
