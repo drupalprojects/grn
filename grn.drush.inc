@@ -62,13 +62,11 @@ function grn_drush_command() {
  * Implementation of drush_hook_COMMAND().
  */
 function drush_grn_release_notes($tag1n, $tag2n) {
-  // return drush_set_error('DRUSH_GRN_DONT_USE', 'Do NOT use this script! It does unholy things like ping d.o for every commit!');
   $git = 'git';
   $additional = '.';
   if (drush_get_option('git')) {
     $git = drush_get_option('git');
   }
-  $get = FALSE; // Set this to TRUE to get category. Otherwise, not used.
   chdir(getcwd());
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
@@ -81,8 +79,8 @@ function drush_grn_release_notes($tag1n, $tag2n) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
   }
   $tag2 = drush_shell_exec_output();
-  $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git, $get);
-  echo _drush_grn_print_changes($changes, $tag1n, $tag1[0], $tag2[0], $git);
+  $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
+  drush_print(_drush_grn_format_changes($changes, $tag1n, $tag1[0], $tag2[0], $git));
   return true;
 }
 
@@ -91,25 +89,18 @@ function drush_grn_release_notes($tag1n, $tag2n) {
 /**
  * Generate the output
  */
-function _drush_grn_print_changes($changes, $prev_tag, $tag1, $tag2, $git) {
+function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
   $return = "<p>Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
-    if (!drush_shell_exec("%s log --pretty=oneline %s..%s | wc -l", $git, $tag1, $tag2)) {
-      return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
-    }
-    echo ' (' . trim(drush_shell_exec_output()) . 'commits)';
+    echo ' (' . trim(drush_get_option('commit-count')) . 'commits)';
   }
   echo ":</p>\n";
   $return .= "<ul>\n";
-  foreach ($changes as $type => $issues) {
-    if ($type != '') { $return .= "<li>$type<ul>\n"; }
-    foreach ($issues as $number => $line) {
-      $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
-      if ($print != "<li></li>\n") {
-        $return .= $print;
-      }
+  foreach ($issues as $number => $line) {
+    $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
+    if ($print != "<li></li>\n") {
+      $return .= $print;
     }
-    if ($type != '') { $return .= "</ul></li>\n"; }
   }
   $return .= "</ul>\n";
   return $return;
@@ -118,64 +109,22 @@ function _drush_grn_print_changes($changes, $prev_tag, $tag1, $tag2, $git) {
 /**
  * Get the changes, and return them in an array sorted by issue type, if available
  */
-function _drush_grn_get_changes($tag1, $tag2, $git, $get) {
+function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
   if (!drush_shell_exec("%s log -s --format=%%B %s..%s", $git, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
-  $changes[_drush_grn_get_issue_type($output[0], $get)][] = $output[0]; // Otherwise, next() would skip first
+  $changes[] = $output[0]; // Otherwise, next() would skip first
   while (($line = next($output)) !== false) {
-      if ($line == '') {
-        // Skip blank lines that are left behind in the messages.
-        continue;
-      }
-      $changes[_drush_grn_get_issue_type($line, $get)][] = $line;
+    if (empty($line)) {
+      // Skip blank lines that are left behind in the messages.
+      continue;
     }
+    $changes[] = $line;
+  }
+  if (drush_get_option('commit-count')) {
+    drush_set_option('commit-count', count($changes));
+  }
   return $changes;
-}
-
-/**
- * Return the pretty name of the category of the first issue mentioned in the message
- */
-function _drush_grn_get_issue_type($line, $get = FALSE) {
-  // Only get type if $get is TRUE
-  if (!$get) {
-    $return = '';
-    return $return;
-  }
-  preg_match('/#(\d+)/', $line, $matches);
-  if (!isset($matches[1]) || empty($matches[1])) {
-    return $return = 'Other changes:';
-  }
-  $issue = trim($matches[1], ' .a..zA..Z#:/'); // @todo Is this really necessary?
-  if (!is_numeric($issue)) {
-    echo "ERROR: '$issue' is not a valid issue number.";
-  }
-  $type = _drush_grn_get_page_data($issue);
-  if ($type == '<tr class="even"><td>Category:</td><td>feature request') {
-    $return = 'New features:';
-  }
-  else if ($type == '<tr class="even"><td>Category:</td><td>bug report') {
-    $return = 'Bug fixes:';
-  }
-  else {
-    $return = 'Other changes:';
-  }
-  return $return;
-}
-
-/**
- * Get the issue page contents and pull it apart to get the category
- */
-function _drush_grn_get_page_data($issue) {
-  $raw = file_get_contents("http://drupal.org/node/" . $issue);
-  // Get type
-  $init = strstr($raw, '  <div class="node-content">
-    <div class="project-issue"><div id="project-summary-container" class="clear-block"><div id="project-issue-summary-table" class="summary"><table>
-');
-  $tfront = strstr($init, '<tr class="even"><td>Category:</td><td>'); // Find what's after the start tag
-  $type = strstr($tfront, '</td> </tr>
- <tr class="odd"><td>Priority:</td><td>', true); // And filter it to get the count
-  return $type;
 }
