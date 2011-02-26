@@ -1,9 +1,9 @@
 Git Release Notes
 =================
 
-This is a Git port of the cvs-release-notes PHP script. The original script lives in the Drupal.org CVS repository at http://drupalcode.org/viewvc/drupal/contributions/tricks/cvs-release-notes/ .
-The Git version will do the same thing, but use Git. For more information, see http://drupal.org/node/1002410 .
-If you have any requests or bug reports, please go to http://drupal.org/node/1002410 and add a comment. In the GitHub issue queue, your issue will most likely go unnoticed.
+This is a Git port of the cvs-release-notes PHP script. The original script lives in the Drupal.org CVS repository at http://drupalcode.org/viewvc/drupal/contributions/tricks/cvs-release-notes/ . (note that after the Great Git Migration, this will no longer exist.
+The Git version will do the same thing, but use Git. For more information, see http://drupal.org/project/grn .
+If you have any requests or bug reports, please file a bug report at http://drupal.org/project/grn .
 
 This script is now a Drush extension, so you must place the file 'grn.drush.inc' in ~/.drush . For more information about installing Drush commands, see the Drush documentation at http://drush.ws .
 
@@ -13,6 +13,7 @@ Usage
 * The drush command is release-notes, alias rn.
 * Options:
 1. --git=PathToGit If included, git-release-notes will use the git binary specified. Otherwise, it will use Git in your path.
+2. --commit-count If included, the output will include the number of commits between the two tags.
 * Parameters:
 1. tag1 The tag marking the starting point of the history output.
 2. tag2 The tag marking the starting point of the history output. (See Note #1)
