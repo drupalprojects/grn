@@ -1,7 +1,0 @@
-This file is to test the regexes that format the output on.
-
-PAtch #Blah by Issue: Patch #2
-- Patch #1234 by abc: def
-Issue #5678 by ghi: jkl
-- #9012 by mno: pqr
-- Issue Patch - #345 by stu: vwx
