@@ -5,7 +5,7 @@
  * generates initial HTML for the release notes. This script must be
  * run inside the root directory of a local Git repo of the project
  * you want to generate release notes for.  Assumes "git" is in your
- * PATH. The author of the CVS version was Derek Wright. Josh The Geek
+ * PATH. The author of the CVS version was dww. Josh The Geek
  * ported the script to Git (for http://drupal.org/node/1002410).
  *
  * Usage:
@@ -13,7 +13,7 @@
  *
  * This is the Drush version of this script.
  *
- * @author Derek Wright (http://drupal.org/user/46549)
+ * @author dww (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
  *
  */
@@ -47,13 +47,13 @@ function grn_drush_command() {
     ),
     'examples' => array(
       'drush release-notes 6.x-1.0 6.x-1.1' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1',
-      'drush release-notes 6.x-1.0 6.x-1.x' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.x (a branch)',
-      'drush rn 6.x-1.0 6.x-1.1 --git=/usr/local/git/bin/git' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1, with git in /usr/local/git/bin/git, and using alias',
+      'drush release-notes 6.x-1.0 6.x-1.x' => 'Use a branch for tag2 (6.x-1.x)',
+      'drush rn 6.x-1.0 6.x-1.1 --git=/usr/local/git/bin/git' => 'Use git in /usr/local/git/bin/git, and using alias',
       'drush rn 6.x-1.0 origin/6.x-1.x' => 'If you don\'t have the branch locally, you might need to use "[remote-name]/[branch-name]"',
     ),
     'aliases' => array('rn'),
     'deprecated-aliases' => array('grn'), // I keep typing it, but not intuitive for others
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap needed
   );
   return $items;
 }
@@ -66,7 +66,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   if (drush_get_option('git')) {
     $git = drush_get_option('git');
   }
-  chdir(getcwd());
+  chdir(getcwd()); // Make sure we're in the working directory started.
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }

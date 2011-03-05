@@ -16,7 +16,7 @@ Usage
 2. --commit-count If included, the output will include the number of commits between the two tags.
 * Parameters:
 1. tag1 The tag marking the starting point of the history output.
-2. tag2 The tag marking the starting point of the history output. (See Note #1)
+2. tag2 The tag marking the ending point of the history output. (See Note #1)
 * Notes:
 1. tag2 can also be a branch (for example drush rn 6.x-1.0 6.x-1.x). You would use this if you had not created the tag yet. This can be a pointer, for example drush rn 6.x-1.0 origin/6.x-1.x if you don't have the branch locally checked out.
 2. tag1 and tag2 can be commit SHA1s.
