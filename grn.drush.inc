@@ -111,7 +111,7 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
  */
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
-  if (!drush_shell_exec("%s log -s --format=%%B %s..%s", $git, $tag1, $tag2)) {
+  if (!drush_shell_exec("%s log -s --format=%%s %s..%s", $git, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
