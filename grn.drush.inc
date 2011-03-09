@@ -63,7 +63,6 @@ function grn_drush_command() {
  */
 function drush_grn_release_notes($tag1n, $tag2n) {
   $git = 'git';
-  $additional = '.';
   if (drush_get_option('git')) {
     $git = drush_get_option('git');
   }
