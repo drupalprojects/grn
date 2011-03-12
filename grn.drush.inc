@@ -70,11 +70,11 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }
-  if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag1n)) {
+  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s^{commit}', $git, $tag1n)) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)));
   }
   $tag1 = drush_shell_exec_output();
-  if (!drush_shell_exec('%s show -s --format=%%H %s^{commit}', $git, $tag2n)) {
+  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s^{commit}', $git, $tag2n)) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
   }
   $tag2 = drush_shell_exec_output();
@@ -110,7 +110,7 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
  */
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
-  if (!drush_shell_exec("%s log -s --format=%%s %s..%s", $git, $tag1, $tag2)) {
+  if (!drush_shell_exec("%s log -s --pretty=format:%%s %s..%s", $git, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
