@@ -5,8 +5,9 @@
  * generates initial HTML for the release notes. This script must be
  * run inside the root directory of a local Git repo of the project
  * you want to generate release notes for.  Assumes "git" is in your
- * PATH. The author of the CVS version was dww. Josh The Geek
- * ported the script to Git (for http://drupal.org/node/1002410).
+ * PATH. Otherwise you should set the --git option. The author of the
+ * CVS version was dww. Josh The Geek ported the script to Git
+ * (for http://drupal.org/node/1002410).
  *
  * Usage:
  * drush release-notes [previous-release-tag] [current-release-tag]
