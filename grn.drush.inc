@@ -73,11 +73,15 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }
-  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s^{commit}', $git, $tag1n)) {
+  // '^' is the escape character on Windows (like '\' on *nix) - has to be
+  // contained in the escaped shell argument string ("%s").
+  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s', $git, $tag1n . '^{commit}')) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)));
   }
   $tag1 = drush_shell_exec_output();
-  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s^{commit}', $git, $tag2n)) {
+  // '^' is the escape character on Windows (like '\' on *nix) - has to be
+  // contained in the escaped shell argument string ("%s").
+  if (!drush_shell_exec('%s show -s --pretty=format:%%H %s', $git, $tag2n . '^{commit}')) {
     return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag2n)), 'error');
   }
   $tag2 = drush_shell_exec_output();
