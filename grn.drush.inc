@@ -82,15 +82,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
-
-  $output = _drush_grn_format_changes($changes, $tag1n, $tag1[0], $tag2[0], $git);
-  if (drush_get_context('DRUSH_PIPE')) {
-    drush_print_pipe(array_keys($items['raw']));
-  }
-  else {
-    drush_print($items['rendered']);
-  }
-
+  drush_print(_drush_grn_format_changes($changes, $tag1n, $tag1[0], $tag2[0], $git));
   return true;
 }
 
@@ -100,11 +92,11 @@ function drush_grn_release_notes($tag1n, $tag2n) {
  * Generate the output
  */
 function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
-  $rendered = "<p>Changes since $prev_tag";
+  $return = "<p>Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
-    $rendered .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
+    $return .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
-  $rendered .= ":</p>\n";
+  $return .= ":</p>\n";
 
   $baseurl = drush_get_option('baseurl', '/node/');
   if (strpos($baseurl, '%s') == FALSE) {
@@ -116,14 +108,14 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
     // Clean up commit log.
     $item = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
     // Add issue links.
-    $items[$item] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
+    $items[] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
   }
 
   if (!empty($items)) {
-    $rendered .= "<ul>\n  <li>" . implode("</li>\n  <li>", $items) . "</li>\n</ul>";
+    $return .= "<ul>\n  <li>" . implode("</li>\n  <li>", $items) . "</li>\n</ul>";
   }
 
-  return array('rendered' => $rendered, 'raw' => $items);
+  return $return;
 }
 
 /**
