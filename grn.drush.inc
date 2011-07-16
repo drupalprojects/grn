@@ -110,6 +110,7 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
     // Add issue links.
     $items[] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
   }
+  drush_command_invoke_all_ref('release_notes_output_alter', $items);
 
   if (!empty($items)) {
     $return .= "<ul>\n  <li>" . implode("</li>\n  <li>", $items) . "</li>\n</ul>";
