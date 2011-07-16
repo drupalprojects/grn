@@ -1,6 +1,8 @@
 <?php
 /**
  * @file
+ * Generates HTML release notes based on commit logs in a Git repository.
+ *
  * Parses all Git log messages between 2 release tags and automatically
  * generates initial HTML for the release notes. This script must be
  * run inside the root directory of a local Git repo of the project
@@ -16,11 +18,10 @@
  *
  * @author dww (http://drupal.org/user/46549)
  * @author Josh The Geek (http://drupal.org/user/926382)
- *
  */
 
 /**
- * Ipmlementation of hook_drush_help().
+ * Implements hook_drush_help().
  */
 function grn_drush_help($section) {
   switch ($section) {
@@ -30,7 +31,7 @@ function grn_drush_help($section) {
 }
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  */
 function grn_drush_command() {
   $items = array();
@@ -62,7 +63,7 @@ function grn_drush_command() {
 }
 
 /**
- * Implementation of drush_hook_COMMAND().
+ * Implements drush_hook_COMMAND().
  */
 function drush_grn_release_notes($tag1n, $tag2n) {
   $git = 'git';
@@ -87,13 +88,13 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
   drush_print(_drush_grn_format_changes($changes, $tag1n, $tag1[0], $tag2[0], $git));
-  return true;
+  return TRUE;
 }
 
 // Other functions
 
 /**
- * Generate the output
+ * Generates the output.
  */
 function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
   $return = "<p>Changes since $prev_tag";
@@ -124,16 +125,17 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
 }
 
 /**
- * Get the changes, and return them in an array sorted by issue type, if available
+ * Gets the changes and returns them in an array.
  */
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
+
   if (!drush_shell_exec("%s log -s --pretty=format:%%s %s..%s", $git, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
   $changes[] = $output[0]; // Otherwise, next() would skip first
-  while (($line = next($output)) !== false) {
+  while (($line = next($output)) !== FALSE) {
     if (empty($line)) {
       // Skip blank lines that are left behind in the messages.
       continue;
