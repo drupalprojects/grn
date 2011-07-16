@@ -45,12 +45,14 @@ function grn_drush_command() {
     'options' => array(
       'git' => 'Path to the git binary, defaults to "git"',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
+      'baseurl' => 'Set the base url for all issue links. Defaults to /node/ for Drupal.org usage. Issue number will be appended to path or replace "%s".',
     ),
     'examples' => array(
       'drush release-notes 6.x-1.0 6.x-1.1' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1',
       'drush release-notes 6.x-1.0 6.x-1.x' => 'Use a branch for tag2 (6.x-1.x)',
       'drush rn 6.x-1.0 6.x-1.1 --git=/usr/local/git/bin/git' => 'Use git in /usr/local/git/bin/git, and using alias',
       'drush rn 6.x-1.0 origin/6.x-1.x' => 'If you don\'t have the branch locally, you might need to use "[remote-name]/[branch-name]"',
+      'drush rn 6.x-1.0 6.x-1.x --baseurl="http://community.openatrium.com/node/"' => 'You can specify the changelog to direct issues to other issue trackers.',
     ),
     'aliases' => array('rn', 'relnotes'),
     'deprecated-aliases' => array('grn'), // I keep typing it, but not intuitive for others
@@ -95,14 +97,24 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
     $return .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
   $return .= ":</p>\n";
-  $return .= "<ul>\n";
-  foreach ($issues as $number => $line) {
-    $print = '<li>' . preg_replace('/^(Patch |- |Issue ){0,3}/', '', preg_replace('/#(\d+)/', '<a href="/node/$1">#$1</a>', $line)) . "</li>\n";
-    if ($print != "<li></li>\n") {
-      $return .= $print;
-    }
+
+  $baseurl = drush_get_option('baseurl', '/node/');
+  if (strpos($baseurl, '%s') == FALSE) {
+    $baseurl .= '%s';
   }
-  $return .= "</ul>\n";
+
+  $items = array();
+  foreach ($issues as $number => $line) {
+    // Clean up commit log.
+    $item = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
+    // Add issue links.
+    $items[] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
+  }
+
+  if (!empty($items)) {
+    $return .= "<ul>\n  <li>" . implode("</li>\n  <li>", $items) . "</li>\n</ul>";
+  }
+
   return $return;
 }
 
