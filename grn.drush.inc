@@ -47,6 +47,7 @@ function grn_drush_command() {
       'git' => 'Path to the git binary, defaults to "git"',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
       'baseurl' => 'Set the base url for all issue links. Defaults to /node/ for Drupal.org usage. Issue number will be appended to path or replace "%s".',
+      'reverse' => 'Display the commits from old to new instead of the default Git behavior that is new to old.'
     ),
     'examples' => array(
       'drush release-notes 6.x-1.0 6.x-1.1' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1',
@@ -54,6 +55,7 @@ function grn_drush_command() {
       'drush rn 6.x-1.0 6.x-1.1 --git=/usr/local/git/bin/git' => 'Use git in /usr/local/git/bin/git, and using alias',
       'drush rn 6.x-1.0 origin/6.x-1.x' => 'If you don\'t have the branch locally, you might need to use "[remote-name]/[branch-name]"',
       'drush rn 6.x-1.0 6.x-1.x --baseurl="http://community.openatrium.com/node/"' => 'You can specify the changelog to direct issues to other issue trackers.',
+      'drush rn 6.x-1.0 6.x-1.x --reverse' => 'Generate release notes from the commits between the two tags in reverse order',
     ),
     'aliases' => array('rn', 'relnotes'),
     'deprecated-aliases' => array('grn'), // I keep typing it, but not intuitive for others
@@ -138,7 +140,8 @@ function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
 function _drush_grn_get_changes($tag1, $tag2, $git) {
   $changes = array();
 
-  if (!drush_shell_exec("%s log -s --pretty=format:%%s %s..%s", $git, $tag1, $tag2)) {
+  $reverse = drush_get_option('reverse', FALSE) ? '--reverse' : '';
+  if (!drush_shell_exec("%s log -s --pretty=format:%%s %s %s..%s", $git, $reverse, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
