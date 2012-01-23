@@ -98,6 +98,15 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   return TRUE;
 }
 
+/**
+ * Implements drush_hook_COMMAND_validate().
+ */
+function drush_grn_release_notes_validate($tag1n = NULL, $tag2n = NULL) {
+  if (empty($tag1n) || empty($tag2n)) {
+    drush_set_error('DRUSH_GRN_MISSING_ARG', dt("  Usage: drush release-notes <start> <end>\n  Try 'drush release-notes --help' for more information."));
+  }
+}
+
 // Other functions
 
 /**
