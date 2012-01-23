@@ -72,7 +72,7 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   if (drush_get_option('git')) {
     $git = drush_get_option('git');
   }
-  chdir(getcwd()); // Make sure we're in the working directory started.
+  drush_shell_exec('chdir ' . drush_cwd()); // Make sure we are in the working directory started.
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }
