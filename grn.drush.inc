@@ -69,12 +69,50 @@ function grn_drush_command() {
 /**
  * Implements drush_hook_COMMAND().
  */
-function drush_grn_release_notes($tag1n, $tag2n) {
+function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   $git = drush_get_option('git', 'git');
   drush_shell_exec('chdir ' . drush_cwd()); // Make sure we are in the working directory started.
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }
+
+  // Fill in calculated tags if both are not given.
+  if (!isset($tag2n)) {
+    // Get all the defined tags in this repository and sort them.
+    drush_shell_exec('%s name-rev HEAD', $git);
+    $branch = substr(array_shift(drush_shell_exec_output()), 5, -1);
+    drush_shell_exec('%s tag -l %s*', $git, $branch);
+    $tags = drush_shell_exec_output();
+    usort($tags, 'version_compare');
+
+    if (!isset($tag1n) && count($tags)) {
+      // If no tags are provided, use the two most recent ones.
+      $tag2n = array_pop($tags);
+
+      $tag1n = count($tags) ? array_pop($tags) : $tag2n;
+    }
+    else {
+      // If only one tag is given, it is considered to be <end> and <start> is
+      // taken to be one tag before it.
+
+      $key = array_search($tag1n, $tags);
+      if (is_numeric($key)) {
+        if ($key > 0) {
+          // Rearrange our tags: the given tag is in fact tag 2.
+          $tag2n = $tag1n;
+          // The <start> tag is one before the given <end> tag.
+          $tag1n = $tags[$key - 1];
+        }
+        else {
+          return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is the first in the branch.', array('!tag' => $tag1n)));
+        }
+      }
+      else {
+        return drush_set_error('DRUSH_INVALID_TAG', dt('!tag is not a valid Git tag.', array('!tag' => $tag1n)));
+      }
+    }
+  }
+
   // '^' is the escape character on Windows (like '\' on *nix) - has to be
   // contained in the escaped shell argument string ("%s").
   if (!drush_shell_exec('%s show -s --pretty=format:%%H %s', $git, $tag1n . '^{commit}')) {
@@ -103,15 +141,6 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
 
   return TRUE;
-}
-
-/**
- * Implements drush_hook_COMMAND_validate().
- */
-function drush_grn_release_notes_validate($tag1n = NULL, $tag2n = NULL) {
-  if (empty($tag1n) || empty($tag2n)) {
-    drush_set_error('DRUSH_GRN_MISSING_ARG', dt("  Usage: drush release-notes <start> <end>\n  Try 'drush release-notes --help' for more information."));
-  }
 }
 
 // Other functions
