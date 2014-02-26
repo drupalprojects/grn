@@ -47,7 +47,8 @@ function grn_drush_command() {
       'git' => 'Path to the git binary, defaults to "git"',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
       'baseurl' => 'Set the base url for all issue links. Defaults to /node/ for Drupal.org usage. Issue number will be appended to path or replace "%s".',
-      'reverse' => 'Display the commits from old to new instead of the default Git behavior that is new to old.'
+      'reverse' => 'Display the commits from old to new instead of the default Git behavior that is new to old.',
+      'changelog' => 'Display the commits in the format for CHANGELOG.txt as expected by drupal.org.',
     ),
     'examples' => array(
       'drush release-notes 6.x-1.0 6.x-1.1' => 'Generate release notes from all commits between 6.x-1.0 and 6.x-1.1',
@@ -56,6 +57,7 @@ function grn_drush_command() {
       'drush rn 6.x-1.0 origin/6.x-1.x' => 'If you don\'t have the branch locally, you might need to use "[remote-name]/[branch-name]"',
       'drush rn 6.x-1.0 6.x-1.x --baseurl="http://community.openatrium.com/node/"' => 'You can specify the changelog to direct issues to other issue trackers.',
       'drush rn 6.x-1.0 6.x-1.x --reverse' => 'Generate release notes from the commits between the two tags in reverse order',
+      'drush rn 6.x-1.0 6.x-1.x --changelog' => 'Generate release notes from the commits between the two tags in the format for CHANGELOG.txt as expected by drupal.org.'
     ),
     'aliases' => array('rn', 'relnotes'),
     'deprecated-aliases' => array('grn'), // I keep typing it, but not intuitive for others
@@ -86,13 +88,18 @@ function drush_grn_release_notes($tag1n, $tag2n) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
-
-  $items = _drush_grn_format_changes($changes, $tag1n, $tag1[0], $tag2[0], $git);
-  if (drush_get_context('DRUSH_PIPE')) {
-    drush_print_pipe(array_keys($items['raw']));
+  $items = _drush_grn_get_items_array($changes);
+  if (drush_get_option('changelog', FALSE)) {
+    $formatted_items = _drush_grn_format_changelog($items, $tag2n);
   }
   else {
-    drush_print($items['rendered']);
+    $formatted_items = _drush_grn_format_changes($items, $tag1n, $tag1[0], $tag2[0], $git);
+  }
+  if (drush_get_context('DRUSH_PIPE')) {
+    drush_print_pipe(array_keys($formatted_items['raw']));
+  }
+  else {
+    drush_print($formatted_items['rendered']);
   }
 
   return TRUE;
@@ -112,32 +119,40 @@ function drush_grn_release_notes_validate($tag1n = NULL, $tag2n = NULL) {
 /**
  * Generates the output.
  */
-function _drush_grn_format_changes($issues, $prev_tag, $tag1, $tag2, $git) {
+function _drush_grn_format_changes($items, $prev_tag, $tag1, $tag2, $git) {
   $rendered = "<p>Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
     $rendered .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
   $rendered .= ":</p>\n";
 
-  $baseurl = drush_get_option('baseurl', '/node/');
-  if (strpos($baseurl, '%s') == FALSE) {
-    $baseurl .= '%s';
-  }
-
-  $items = array();
-  foreach ($issues as $number => $line) {
-    // Clean up commit log.
-    $item = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
-    // Add issue links.
-    $items[$item] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
-  }
-  drush_command_invoke_all_ref('release_notes_output_alter', $items);
-
   if (!empty($items)) {
     $rendered .= "<ul>\n  <li>" . implode("</li>\n  <li>", $items) . "</li>\n</ul>";
   }
 
   return array('rendered' => $rendered, 'raw' => $items);
+}
+
+function _drush_grn_format_changelog($items, $tag) {
+  drush_shell_exec("more *.info | grep name");
+  $name = "";
+  $info = drush_shell_exec_output();
+  $info = explode("=", $info[0]);
+  if (isset($info[1])) {
+    $name = trim($info[1]);
+  }
+  drush_shell_exec("git show -s --pretty=format:%%ad --date=short $tag");
+  $date = drush_shell_exec_output();
+  $changelog = $name . " " . $tag . ", " . $date[0] . "\n";
+  $changelog .= str_pad("", strlen($changelog), "-");
+  $changelog .= "\n";
+  foreach ($items as $raw => $html) {
+    $changelog .= '- ';
+    $line = ucfirst(trim((strpos($raw, "#") === 0) ? substr(strstr($raw, ':'), 1) : $raw));
+    $changelog .= substr($line, -1) == "." ? $line : $line . ".";
+    $changelog .= "\n";
+  }
+  return array('raw' => $items, 'rendered' => $changelog);
 }
 
 /**
@@ -163,4 +178,21 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
     drush_set_option('commit-count', count($changes));
   }
   return $changes;
+}
+
+function _drush_grn_get_items_array($issues) {
+  $baseurl = drush_get_option('baseurl', '/node/');
+  if (strpos($baseurl, '%s') == FALSE) {
+    $baseurl .= '%s';
+  }
+
+  $items = array();
+  foreach ($issues as $number => $line) {
+    // Clean up commit log.
+    $item = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
+    // Add issue links.
+    $items[$item] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
+  }
+  drush_command_invoke_all_ref('release_notes_output_alter', $items);
+  return $items;
 }
