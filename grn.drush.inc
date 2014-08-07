@@ -170,7 +170,7 @@ function _drush_grn_format_changelog($items, $tag) {
   if (isset($info[1])) {
     $name = trim($info[1]);
   }
-  drush_shell_exec("git show -s --pretty=format:%%ad --date=short $tag");
+  drush_shell_exec("git show -s --pretty=format:%ad --date=short $tag");
   $date = drush_shell_exec_output();
   $changelog = $name . " " . $tag . ", " . $date[0] . "\n";
   $changelog .= str_pad("", strlen($changelog), "-");
