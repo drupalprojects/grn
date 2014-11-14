@@ -172,17 +172,20 @@ function _drush_grn_format_changes($items, $prev_tag, $tag1, $tag2, $git) {
 }
 
 function _drush_grn_format_changelog($items, $tag) {
-  drush_shell_exec("more *.info | grep name");
-  $name = "";
-  $info = drush_shell_exec_output();
-  $info = explode("=", $info[0]);
-  if (isset($info[1])) {
-    $name = trim($info[1]);
+  if ($infos = glob('*.info')) {
+    foreach ($infos as $info) {
+      $ini_array = parse_ini_file($info);
+      $name = trim($ini_array['name']," \t\n\r\0\x0B\"");
+    }
   }
   drush_shell_exec("git show -s --pretty=format:%ad --date=short $tag");
   $date = drush_shell_exec_output();
-  $changelog = $name . " " . $tag . ", " . $date[0] . "\n";
-  $changelog .= str_pad("", strlen($changelog), "-");
+  $changelog = empty($name) ? '' : ($name . " ");
+  $changelog .= $tag . ", " . $date[0];
+  if (drush_get_option('commit-count')) {
+    $changelog .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
+  }
+  $changelog .= "\n" . str_pad("", strlen($changelog), "-");
   $changelog .= "\n";
   foreach ($items as $raw => $html) {
     $changelog .= '- ';
