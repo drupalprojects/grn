@@ -48,6 +48,7 @@ function grn_drush_command() {
       'changelog' => 'Display the commits in the format for CHANGELOG.txt as expected by drupal.org.',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
       'git' => 'Path to the git binary, defaults to "git"',
+      'nouser' => 'Do not try to link to user page using the /u/alias, as used in drupal.org',
       'pretty' => array(
         'description' => 'pretty format of the message, see the git-log man page (section "PRETTY FORMATS")',
         'example-value' => '%s',
@@ -234,10 +235,29 @@ function _drush_grn_get_items_array($issues) {
 
   $items = array();
   foreach ($issues as $number => $line) {
+    // Pattern is "Issue #[issue number] by [comma-separated usernames]: [Short summary of the change]."
     // Clean up commit log.
-    $item = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
+    $raw = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
     // Add issue links.
-    $items[$item] = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $item);
+    $item = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $raw);
+    // Replace usernames with link to user page
+    if (drush_get_option('nouser', FALSE) === FALSE) {
+      // Anything between by and ':' is a comma-separated list of usernames
+      $item = preg_replace_callback('/by ([^:]+):/S',
+        function($matches) {
+          $out = array();
+          // Separate the different usernames
+          foreach (explode(',', $matches[1]) as $user) {
+            // Trim spaces, convert to lowercase, and spaces in middle are replaced with dashes
+            $ualias = str_replace(' ', '-', strtolower(trim($user)));
+            $out[] = '<a href="/u/' . $ualias . '">' . trim($user) . '</a>';
+          }
+
+          return 'by ' . implode(', ', $out) . ':';
+        },
+        $item);
+    }
+    $items[$raw] = $item;
   }
   drush_command_invoke_all_ref('release_notes_output_alter', $items);
   return $items;
