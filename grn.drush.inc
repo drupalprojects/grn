@@ -48,7 +48,12 @@ function grn_drush_command() {
       'changelog' => 'Display the commits in the format for CHANGELOG.txt as expected by drupal.org.',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
       'commit-links' => 'Attach a link to the commit in drupalcode.org repository viewer to the end of the commit lines.',
-      'git' => 'Path to the git binary, defaults to "git"',
+      'git' => array(
+        'description' => 'Path to the git binary, defaults to "git"',
+        'example-value' => '/path/to/git',
+        'value' => 'required',
+        'required' => FALSE,
+      ),
       'nouser' => 'Do not try to link to user page using the /u/alias, as used in drupal.org',
       'pretty' => array(
         'description' => 'pretty format of the message, see the git-log man page (section "PRETTY FORMATS")',
