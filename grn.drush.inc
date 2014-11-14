@@ -47,6 +47,7 @@ function grn_drush_command() {
       'baseurl' => 'Set the base url for all issue links. Defaults to /node/ for Drupal.org usage. Issue number will be appended to path or replace "%s".',
       'changelog' => 'Display the commits in the format for CHANGELOG.txt as expected by drupal.org.',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
+      'commit-links' => 'Attach a link to the commit in drupalcode.org repository viewer to the end of the commit lines.',
       'git' => 'Path to the git binary, defaults to "git"',
       'nouser' => 'Do not try to link to user page using the /u/alias, as used in drupal.org',
       'pretty' => array(
@@ -136,7 +137,11 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   }
   $tag2 = drush_shell_exec_output();
   $changes = _drush_grn_get_changes($tag1[0], $tag2[0], $git);
-  $items = _drush_grn_get_items_array($changes);
+
+  // Check if we need to produce commit links.
+  $commit_path = drush_get_option('commit-links', FALSE) ? _drush_grn_get_commit_path($git) : '';
+
+  $items = _drush_grn_get_items_array($changes, $commit_path);
   if (drush_get_option('changelog', FALSE)) {
     $formatted_items = _drush_grn_format_changelog($items, $tag2n);
   }
@@ -198,6 +203,40 @@ function _drush_grn_format_changelog($items, $tag) {
 }
 
 /**
+ * Discover the URL to the 'origin' repository viewer on drupalcode.org
+ *
+ * @param string $git
+ *        the actual git command we are going to use.
+ * @return string
+ *        The URL to the repository viewer.
+ */
+function _drush_grn_get_commit_path($git) {
+  // Execute the git config --get remote.origin.url
+  if (!drush_shell_exec("%s config --get remote.origin.url", $git)) {
+    return drush_set_error('DRUSH_GIT_CONFIG_ERROR', 'git config returned an error.');
+  }
+  // Get the output of the above command.
+  $output = drush_shell_exec_output();
+  // Check to see if this is a drupal.org project
+  if (!strpos($output[0], 'drupal.org')) {
+    return drush_set_error('DRUSH_COMMIT_URL_UNKNOWN_ERROR', 'The commits url is not in drupal.org.');
+  }
+  // Check to see if this is a sandbox project
+  $regexp = (strpos($output[0], '@git.drupal.org:')) ? '/(\w+?@git\.drupal\.org:project\/)/s' : '/http:\/\/git\.drupal\.org\//s';
+
+  // Format the URL of the project's repository.
+  $count = 0;
+  $return = preg_replace($regexp, 'http://drupalcode.org/', $output[0], -1, $count);
+  // Maybe an error occured?
+  if ($count <= 0) {
+    return drush_set_error('DRUSH_COMMIT_URL_UNKNOWN_ERROR', 'The commits url could not be discovered.');
+  }
+  // Done
+  return $return . '/commit/';
+}
+
+
+/**
  * Gets the changes and returns them in an array.
  */
 function _drush_grn_get_changes($tag1, $tag2, $git) {
@@ -208,18 +247,18 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   if (is_bool($pretty)) {
     $pretty = '%s';  // Default pretty format
   }
+  $pretty = '%h ' . $pretty;
 
   if (!drush_shell_exec("%s log -s --pretty=format:%s %s %s..%s", $git, $pretty, $reverse, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
   }
   $output = drush_shell_exec_output();
-  $changes[] = $output[0]; // Otherwise, next() would skip first
-  while (($line = next($output)) !== FALSE) {
+  foreach ($output as $line) {
     if (empty($line)) {
       // Skip blank lines that are left behind in the messages.
       continue;
     }
-    $changes[] = $line;
+    $changes[substr($line, 0, 7)] = substr($line, 8);
   }
   if (drush_get_option('commit-count')) {
     drush_set_option('commit-count', count($changes));
@@ -227,14 +266,14 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   return $changes;
 }
 
-function _drush_grn_get_items_array($issues) {
+function _drush_grn_get_items_array($issues, $commit_path) {
   $baseurl = drush_get_option('baseurl', '/node/');
   if (strpos($baseurl, '%s') == FALSE) {
     $baseurl .= '%s';
   }
 
   $items = array();
-  foreach ($issues as $number => $line) {
+  foreach ($issues as $hash => $line) {
     // Pattern is "Issue #[issue number] by [comma-separated usernames]: [Short summary of the change]."
     // Clean up commit log.
     $raw = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
@@ -256,6 +295,10 @@ function _drush_grn_get_items_array($issues) {
           return 'by ' . implode(', ', $out) . ':';
         },
         $item);
+    }
+    // If the command was invoked with the --commit-links option
+    if (!empty($commit_path)) {
+      $item .= ' (<a href="' . $commit_path . $hash . '" title="View commit">#</a>)';
     }
     $items[$raw] = $item;
   }
