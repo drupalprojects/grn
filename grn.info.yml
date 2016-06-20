@@ -1,0 +1,4 @@
+name: 'Git Release Notes'
+description: 'Creates release notes suitable for use by d.o project maintainers.'
+core: 8.x
+type: module
