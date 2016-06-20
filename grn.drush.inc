@@ -46,6 +46,7 @@ function grn_drush_command() {
     'options' => array(
       'baseurl' => 'Set the base url for all issue links. Defaults to /node/ for Drupal.org usage. Issue number will be appended to path or replace "%s".',
       'changelog' => 'Display the commits in the format for CHANGELOG.txt as expected by drupal.org.',
+      'md' => 'Display the commits in MD format',
       'commit-count' => 'If set, output will show the number of commits between the two tags',
       'commit-links' => 'Attach a link to the commit in drupalcode.org repository viewer to the end of the commit lines.',
       'git' => array(
@@ -150,6 +151,9 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   if (drush_get_option('changelog', FALSE)) {
     $formatted_items = _drush_grn_format_changelog($items, $tag2n);
   }
+  elseif (drush_get_option('md', FALSE)) {
+    $formatted_items = _drush_grn_format_md($items, $tag1n, $tag1[0], $tag2[0], $git);
+  }
   else {
     $formatted_items = _drush_grn_format_changes($items, $tag1n, $tag1[0], $tag2[0], $git);
   }
@@ -182,6 +186,26 @@ function _drush_grn_format_changes($items, $prev_tag, $tag1, $tag2, $git) {
   return array('rendered' => $rendered, 'raw' => $items);
 }
 
+/**
+ * Generated output in MD format.
+ */
+function _drush_grn_format_md($items, $prev_tag, $tag1, $tag2, $git) {
+  $rendered = "**Changes since $prev_tag";
+  if (drush_get_option('commit-count')) {
+    $rendered .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
+  }
+  $rendered .= "**\n\n";
+
+  if (!empty($items)) {
+    $rendered .= "* " . implode("\n* ", $items) . "\n";
+  }
+
+  return array('rendered' => $rendered, 'raw' => $items);
+}
+
+/**
+ * Generated output in Changelog format.
+ */
 function _drush_grn_format_changelog($items, $tag) {
   if ($infos = glob('*.info')) {
     foreach ($infos as $info) {
@@ -240,7 +264,6 @@ function _drush_grn_get_commit_path($git) {
   return $return . '/commit/';
 }
 
-
 /**
  * Gets the changes and returns them in an array.
  */
@@ -283,7 +306,8 @@ function _drush_grn_get_items_array($issues, $commit_path) {
     // Clean up commit log.
     $raw = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
     // Add issue links.
-    $item = preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $raw);
+    $item = (drush_get_option('md', FALSE)) ? preg_replace('/#(\d+)/S', '[#$1](' . str_replace('%s', '$1', $baseurl) . ')', $raw) :
+      preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $raw);
     // Replace usernames with link to user page
     if (drush_get_option('nouser', FALSE) === FALSE) {
       // Anything between by and ':' is a comma-separated list of usernames
@@ -294,7 +318,8 @@ function _drush_grn_get_items_array($issues, $commit_path) {
           foreach (explode(',', $matches[1]) as $user) {
             // Trim spaces, convert to lowercase, and spaces in middle are replaced with dashes
             $ualias = str_replace(' ', '-', strtolower(trim($user)));
-            $out[] = '<a href="/u/' . $ualias . '">' . trim($user) . '</a>';
+            $out[] = (drush_get_option('md', FALSE)) ? "[$ualias](/u/$ualias)" :
+              ("<a href='/u/$ualias'>" . trim($user) . '</a>');
           }
 
           return 'by ' . implode(', ', $out) . ':';
