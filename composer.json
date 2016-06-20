@@ -1,0 +1,20 @@
+{
+  "name": "drupal/grn",
+  "description": "Creates release notes suitable for use by d.o project maintainers.",
+  "type": "drupal-drush",
+  "homepage": "https://drupal.org/project/grn",
+  "authors": [
+    {
+      "name": "Josh Oldenburg",
+      "homepage": "https://www.drupal.org/u/josh-the-geek"
+    },
+    {
+      "name": "João Ventura",
+      "homepage": "https://www.drupal.org/u/jcnventura"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/grn"
+  },
+  "license": "GPL-2.0+"
+}
