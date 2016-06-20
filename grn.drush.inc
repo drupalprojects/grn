@@ -95,8 +95,8 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   // Fill in calculated tags if both are not given.
   if (!isset($tag2n)) {
     // Get all the defined tags in this repository and sort them.
-    drush_shell_exec('%s name-rev HEAD', $git);
-    $branch = substr(array_shift(drush_shell_exec_output()), 5, -1);
+    drush_shell_exec('%s rev-parse --abbrev-ref HEAD', $git);
+    $branch = substr(array_shift(drush_shell_exec_output()), 0, -1);
     drush_shell_exec('%s tag -l %s*', $git, $branch);
     $tags = drush_shell_exec_output();
     usort($tags, 'version_compare');
