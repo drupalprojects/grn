@@ -275,7 +275,7 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   if (is_bool($pretty)) {
     $pretty = '%s';  // Default pretty format
   }
-  $pretty = '%h ' . $pretty;
+  $pretty = '%H ' . $pretty;
 
   if (!drush_shell_exec("%s log -s --pretty=format:%s %s %s..%s", $git, $pretty, $reverse, $tag1, $tag2)) {
     return drush_set_error('DRUSH_GIT_LOG_ERROR', 'git log returned an error.');
@@ -286,7 +286,8 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
       // Skip blank lines that are left behind in the messages.
       continue;
     }
-    $changes[substr($line, 0, 7)] = substr($line, 8);
+    list($hash, $message) = explode(' ', $line, 2);
+    $changes[$hash] = $message;
   }
   if (drush_get_option('commit-count')) {
     drush_set_option('commit-count', count($changes));
